@@ -1,0 +1,400 @@
+---
+// "Limo" - guided lead-capture assistant. Runs fully in the browser (static site): understands
+// common questions, recommends a service, qualifies the lead and hands it off via WhatsApp / call / email.
+import Bird from './Bird.astro';
+import Icon from './Icon.astro';
+---
+<div class="cb" id="cb">
+  <div class="cb-teaser" id="cb-teaser" hidden>
+    <button class="cb-teaser-x" aria-label="Dismiss">×</button>
+    <b>Hi there 👋</b> Looking to grow your brand in Dubai? I can recommend the right service in 30 seconds.
+  </div>
+  <button class="cb-launch" id="cb-launch" aria-label="Chat with Limeflock" aria-expanded="false">
+    <span class="cb-launch-bird"><Bird uid="cbl" eager /></span>
+    <span class="cb-launch-x">×</span>
+    <i class="cb-dot"></i>
+  </button>
+
+  <section class="cb-panel" id="cb-panel" aria-label="Limeflock assistant" hidden>
+    <header class="cb-head">
+      <span class="cb-ava"><Bird uid="cbh" eager class="flap" /></span>
+      <div>
+        <b>Limo · Limeflock Assistant</b>
+        <small><i></i> Online · replies instantly</small>
+      </div>
+      <a class="cb-head-btn" href="tel:+971541916252" aria-label="Call us"><Icon name="phone" /></a>
+      <button class="cb-head-btn" id="cb-close" aria-label="Close chat">×</button>
+    </header>
+    <div class="cb-body" id="cb-body" aria-live="polite"></div>
+    <form class="cb-input" id="cb-form" autocomplete="on">
+      <input id="cb-text" placeholder="Type your question…" aria-label="Message" />
+      <button aria-label="Send"><Icon name="send" /></button>
+    </form>
+    <div class="cb-powered">Limeflock · Digital Growth Partner</div>
+  </section>
+</div>
+
+<script>
+  import { services, categories, byCat, type Service } from '../data/services';
+  import { site } from '../data/site';
+
+  const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
+  const root = $('cb'), panel = $('cb-panel'), body = $('cb-body'), form = $<HTMLFormElement>('cb-form'), input = $<HTMLInputElement>('cb-text');
+  const launch = $('cb-launch'), teaser = $('cb-teaser');
+
+  type Step = 'start' | 'category' | 'service' | 'goal' | 'budget' | 'timeline' | 'name' | 'phone' | 'email' | 'done' | 'free';
+  const lead: Record<string, string> = {};
+  let step: Step = 'start';
+  let started = false;
+
+  /* ---------- open / close ---------- */
+  const open = (v: boolean) => {
+    panel.hidden = !v;
+    root.classList.toggle('open', v);
+    launch.setAttribute('aria-expanded', String(v));
+    teaser.hidden = true;
+    if (v && !started) { started = true; greet(); }
+    if (v) setTimeout(() => input.focus(), 300);
+  };
+  launch.addEventListener('click', () => open(panel.hidden));
+  $('cb-close').addEventListener('click', () => open(false));
+  teaser.addEventListener('click', (e) => { if ((e.target as HTMLElement).closest('.cb-teaser-x')) { teaser.hidden = true; return; } open(true); });
+  document.querySelectorAll('[data-open-chat]').forEach((el) => el.addEventListener('click', (e) => { e.preventDefault(); open(true); }));
+  try { if (!sessionStorage.getItem('cb-teased')) setTimeout(() => { if (panel.hidden) teaser.hidden = false; sessionStorage.setItem('cb-teased', '1'); }, 7000); } catch {}
+
+  /* ---------- rendering ---------- */
+  const scroll = () => body.scrollTo({ top: body.scrollHeight, behavior: 'smooth' });
+  const esc = (t: string) => t.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]!));
+  function bubble(html: string, who: 'bot' | 'me' = 'bot') {
+    const el = document.createElement('div');
+    el.className = `cb-msg ${who}`;
+    el.innerHTML = html;
+    body.append(el);
+    scroll();
+    return el;
+  }
+  function say(lines: string[], then?: () => void) {
+    const typing = bubble('<span class="cb-typing"><i></i><i></i><i></i></span>');
+    let i = 0;
+    const next = () => {
+      if (i === 0) typing.remove();
+      if (i < lines.length) { bubble(lines[i++]); setTimeout(next, 450); }
+      else then?.();
+    };
+    setTimeout(next, 650 + Math.min(lines[0].length * 6, 600));
+  }
+  function chips(opts: { label: string; value?: string; cls?: string }[], onPick: (value: string, label: string) => void) {
+    const wrap = document.createElement('div');
+    wrap.className = 'cb-chips';
+    opts.forEach((o) => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = `cb-chip ${o.cls || ''}`;
+      b.textContent = o.label;
+      b.addEventListener('click', () => { wrap.remove(); bubble(esc(o.label), 'me'); onPick(o.value ?? o.label, o.label); });
+      wrap.append(b);
+    });
+    body.append(wrap);
+    scroll();
+  }
+  const clearChips = () => body.querySelectorAll('.cb-chips').forEach((c) => c.remove());
+  const setPlaceholder = (t: string, type = 'text') => { input.placeholder = t; input.type = type; };
+
+  /* ---------- knowledge ---------- */
+  const synonyms: Record<string, string[]> = {
+    'website-design-dubai': ['website', 'web design', 'site', 'landing page', 'redesign'],
+    'web-development-dubai': ['development', 'developer', 'web app', 'custom website'],
+    'ecommerce-development-dubai': ['ecommerce', 'e-commerce', 'online store', 'shopify', 'woocommerce', 'shop'],
+    'wordpress-development-dubai': ['wordpress', 'wp'],
+    'seo-services-dubai': ['seo', 'rank', 'ranking', 'google search', 'organic'],
+    'local-seo-dubai': ['local seo', 'google maps', 'map pack', 'google business', 'near me'],
+    'ai-search-optimization-dubai': ['ai search', 'ai overview', 'gemini', 'perplexity'],
+    'aeo-geo-services-dubai': ['aeo', 'geo', 'answer engine', 'generative engine'],
+    'chatgpt-seo-dubai': ['chatgpt'],
+    'performance-marketing-dubai': ['performance', 'paid ads', 'ads', 'advertising online', 'roas'],
+    'google-ads-dubai': ['google ads', 'ppc', 'adwords', 'search ads', 'youtube ads'],
+    'meta-ads-dubai': ['meta', 'facebook ads', 'instagram ads', 'fb ads'],
+    'social-media-marketing-dubai': ['social media', 'instagram', 'tiktok', 'facebook', 'linkedin', 'reels', 'content', 'influencer'],
+    'lead-generation-dubai': ['leads', 'lead generation', 'b2b', 'appointments', 'funnel'],
+    'arabic-digital-marketing-dubai': ['arabic', 'arab', 'translation'],
+    'ai-marketing-agency-dubai': ['ai marketing', 'artificial intelligence'],
+    'ai-automation-agency-dubai': ['automation', 'automate', 'crm', 'zapier', 'n8n', 'workflow'],
+    'ai-chatbot-development-dubai': ['chatbot', 'bot', 'chat bot', 'ai assistant'],
+    'whatsapp-business-api-dubai': ['whatsapp api', 'green tick', 'whatsapp business', 'whatsapp bot'],
+    'ooh-advertising-dubai': ['ooh', 'outdoor', 'out of home'],
+    'billboard-advertising-dubai': ['billboard', 'hoarding', 'unipole', 'sheikh zayed'],
+    'led-billboard-advertising-dubai': ['led screen', 'digital billboard', 'led billboard', 'dooh', 'screen'],
+    'glass-truck-advertising-dubai': ['glass truck', 'glass box'],
+    'led-truck-advertising-dubai': ['led truck', 'truck', 'mobile billboard', 'van'],
+    'mobile-meeting-bus-dubai': ['meeting bus', 'experience bus', 'roadshow', 'bus experience'],
+    'dubai-metro-advertising': ['metro', 'train', 'station'],
+    'taxi-advertising-dubai': ['taxi', 'cab', 'car wrap'],
+    'bus-advertising-dubai': ['bus', 'bus wrap', 'rta bus'],
+    'bus-shelter-advertising-dubai': ['bus shelter', 'bus stop', 'shelter'],
+    'mall-advertising-dubai': ['mall', 'dubai mall', 'shopping mall'],
+    'media-buying-agency-dubai': ['media buying', 'media plan', 'tv', 'television'],
+    'pr-agency-dubai': ['pr', 'press release', 'press', 'news', 'media coverage'],
+    'radio-advertising-dubai': ['radio'],
+    'branding-agency-dubai': ['branding', 'brand', 'logo', 'identity', 'design', 'graphic'],
+    'video-production-dubai': ['video', 'film', 'shoot', 'production', 'animation', 'motion'],
+    'corporate-gifts-dubai': ['gift', 'gifts', 'giveaway', 'merchandise', 'merch'],
+    'whatsapp-marketing-dubai': ['whatsapp marketing', 'whatsapp broadcast', 'whatsapp'],
+    'sms-marketing-dubai': ['sms', 'text message', 'bulk sms'],
+    'email-marketing-dubai': ['email marketing', 'newsletter', 'mailchimp', 'email campaign'],
+    'flyer-distribution-dubai': ['flyer', 'leaflet', 'brochure', 'distribution'],
+    'btl-activation-dubai': ['btl', 'activation', 'sampling', 'kiosk', 'booth'],
+    'event-marketing-dubai': ['event', 'exhibition', 'launch event', 'gitex'],
+    'event-promoters-dubai': ['promoter', 'promoters', 'hostess', 'model', 'artist', 'mc'],
+  };
+  function matchService(text: string): Service | null {
+    const t = ` ${text.toLowerCase()} `;
+    let best: Service | null = null, score = 0;
+    for (const s of services) {
+      let sc = 0;
+      for (const k of synonyms[s.slug] ?? []) if (t.includes(k)) sc += k.length;
+      if (t.includes(s.title.toLowerCase())) sc += 40;
+      if (sc > score) { score = sc; best = s; }
+    }
+    return score >= 2 ? best : null;
+  }
+  const has = (t: string, words: string[]) => words.some((w) => t.includes(w));
+
+  /* ---------- flow ---------- */
+  function greet() {
+    say([
+      `Hi! I'm <b>Limo</b> - Limeflock's assistant. 👋`,
+      `What can we help you with today? Pick a service area or just type your question.`,
+    ], askCategory);
+  }
+  function askCategory() {
+    step = 'category';
+    setPlaceholder('Type your question…');
+    chips([
+      ...categories.map((c) => ({ label: c.title, value: c.slug })),
+      { label: '💬 I have a question', value: '__q', cls: 'alt' },
+      { label: '📞 Talk to a human', value: '__human', cls: 'alt' },
+    ], (v) => {
+      if (v === '__q') { step = 'free'; return say(['Sure - ask me anything: pricing, timelines, which service fits your business…']); }
+      if (v === '__human') return human();
+      lead.category = categories.find((c) => c.slug === v)!.title;
+      askService(v);
+    });
+  }
+  function askService(cat: string) {
+    step = 'service';
+    const c = categories.find((x) => x.slug === cat)!;
+    say([`Great choice! ${c.desc}`, 'Which one are you interested in?'], () =>
+      chips([...byCat(cat).map((s) => ({ label: s.title, value: s.slug })), { label: 'Not sure - advise me', value: '__unsure', cls: 'alt' }], (v, label) => {
+        lead.service = v === '__unsure' ? `${c.title} (needs advice)` : label;
+        const s = services.find((x) => x.slug === v);
+        if (s) say([`👍 <b>${s.title}</b> - ${s.desc}`, `<a class="cb-link" href="/${s.slug}/">See what's included →</a>`], askGoal);
+        else askGoal();
+      })
+    );
+  }
+  function recommend(s: Service) {
+    lead.service = s.title;
+    lead.category = categories.find((c) => c.slug === s.cat)!.title;
+    say([`Sounds like you need <b>${s.title}</b>. ${s.desc}`, `<a class="cb-link" href="/${s.slug}/">See what's included →</a>`], askGoal);
+  }
+  function askGoal() {
+    step = 'goal';
+    say(["What's your main goal?"], () =>
+      chips(['More leads & enquiries', 'More online sales', 'Brand awareness', 'Launch something new', 'Other'].map((l) => ({ label: l })), (v) => { lead.goal = v; askBudget(); })
+    );
+  }
+  function askBudget() {
+    step = 'budget';
+    say(['And roughly what monthly budget do you have in mind?'], () =>
+      chips(['Under AED 3,000', 'AED 3,000 – 10,000', 'AED 10,000 – 25,000', 'AED 25,000+', 'Not sure yet'].map((l) => ({ label: l })), (v) => { lead.budget = v; askTimeline(); })
+    );
+  }
+  function askTimeline() {
+    step = 'timeline';
+    say(['When would you like to start?'], () =>
+      chips(['ASAP 🚀', 'This month', 'In 1–3 months', 'Just exploring'].map((l) => ({ label: l })), (v) => { lead.timeline = v; askName(); })
+    );
+  }
+  function askName() {
+    step = 'name';
+    setPlaceholder('Your name');
+    say(["Perfect. I'll put together a free plan for you - what's your name?"]);
+  }
+  function askPhone() {
+    step = 'phone';
+    setPlaceholder('+971 5X XXX XXXX', 'tel');
+    say([`Nice to meet you, ${esc(lead.name)}! What's the best <b>WhatsApp / phone number</b> to reach you?`]);
+  }
+  function askEmail() {
+    step = 'email';
+    setPlaceholder('you@company.com (optional)', 'email');
+    say(['Last one - your email? (optional)'], () => chips([{ label: 'Skip', cls: 'alt' }], () => finish()));
+  }
+  function waText() {
+    const l = [
+      `Hi Limeflock, I'm ${lead.name}.`,
+      lead.service && `Interested in: ${lead.service}`,
+      lead.goal && `Goal: ${lead.goal}`,
+      lead.budget && `Budget: ${lead.budget}`,
+      lead.timeline && `Start: ${lead.timeline}`,
+      lead.phone && `Phone: ${lead.phone}`,
+      lead.email && `Email: ${lead.email}`,
+      lead.question && `Question: ${lead.question}`,
+    ].filter(Boolean);
+    return l.join('\n');
+  }
+  function actions(title = 'Choose how to connect:') {
+    const wa = `${site.whatsapp}?text=${encodeURIComponent(lead.name ? waText() : 'Hi Limeflock, I would like to know more about your services.')}`;
+    const mail = `mailto:${site.email}?subject=${encodeURIComponent('New enquiry' + (lead.service ? ` – ${lead.service}` : ''))}&body=${encodeURIComponent(lead.name ? waText() : '')}`;
+    bubble(`<div class="cb-actions"><small>${title}</small>
+      <a class="cb-act wa" href="${wa}" target="_blank" rel="noopener">WhatsApp us now</a>
+      <a class="cb-act call" href="${site.phoneHref}">Call ${site.phone}</a>
+      <a class="cb-act mail" href="${mail}">Email us</a></div>`);
+  }
+  function finish() {
+    step = 'done';
+    setPlaceholder('Anything else? Type here…');
+    try {
+      const all = JSON.parse(localStorage.getItem('lf-leads') || '[]');
+      all.push({ ...lead, page: location.pathname, at: new Date().toISOString() });
+      localStorage.setItem('lf-leads', JSON.stringify(all));
+    } catch {}
+    (window as any).dataLayer?.push({ event: 'generate_lead', lead_service: lead.service || '', lead_budget: lead.budget || '' });
+    const rows = [['Service', lead.service], ['Goal', lead.goal], ['Budget', lead.budget], ['Start', lead.timeline], ['Phone', lead.phone], ['Email', lead.email]]
+      .filter(([, v]) => v).map(([k, v]) => `<li><span>${k}</span><b>${esc(v!)}</b></li>`).join('');
+    say([
+      `Thanks ${esc(lead.name)}! 🎉 Here's your request:`,
+      `<ul class="cb-summary">${rows}</ul>`,
+      'Tap <b>WhatsApp</b> to send it - a specialist replies within the hour (Mon–Sat, 9 AM–7 PM).',
+    ], () => actions('Send your request:'));
+  }
+  function human() {
+    say(['Of course! Our team is one tap away 👇'], () => actions('Talk to a specialist:'));
+  }
+
+  /* ---------- free text ---------- */
+  function answer(text: string) {
+    const t = text.toLowerCase();
+    if (has(t, ['price', 'cost', 'how much', 'budget', 'rate', 'charges', 'fee', 'package', 'quote'])) {
+      lead.question = text;
+      return say(['Pricing depends on scope - for example, websites start from a one-off fee and ads/SEO run on monthly retainers. Outdoor campaigns depend on location and duration.', "Tell me a little about what you need and I'll get you a <b>fixed, itemised quote</b> - usually the same day."],
+        () => (lead.service ? askName() : askCategory()));
+    }
+    if (has(t, ['how long', 'time', 'timeline', 'when', 'fast', 'quick', 'days', 'weeks'])) {
+      return say(['Typical timelines: landing page 5–7 days · website 2–4 weeks · online store 4–6 weeks · ads live in 48 hours · outdoor campaigns 7–14 days incl. approvals.'], () => (step === 'free' || step === 'done' ? offerPlan() : undefined));
+    }
+    if (has(t, ['where', 'address', 'location', 'office', 'located', 'visit'])) {
+      return say([`We're at <b>${site.address.join(', ')}</b> (${site.poBox}).`, `Open ${site.hours.join(' · ')}.`], () => actions());
+    }
+    if (has(t, ['call', 'phone', 'human', 'talk', 'speak', 'agent', 'contact', 'number', 'whatsapp me'])) return human();
+    if (has(t, ['hi', 'hello', 'hey', 'salam', 'marhaba']) && t.length < 12) return say(['Hello! 👋 How can I help you grow today?'], askCategory);
+    if (has(t, ['portfolio', 'work', 'clients', 'examples', 'case'])) return say(['We\'ve delivered 300+ projects for brands in the UAE, UK, US, Canada and India.', '<a class="cb-link" href="/portfolio/">See our portfolio →</a>'], offerPlan);
+    const s = matchService(t);
+    if (s) return recommend(s);
+    lead.question = text;
+    say(["Good question! A specialist can answer that best - let me take your details and we'll get back to you within the hour."], askName);
+  }
+  function offerPlan() {
+    say(['Want a free plan and quote for your business?'], () => chips([{ label: 'Yes, let\'s do it' }, { label: 'Just browsing', cls: 'alt' }], (v) => (v.startsWith('Yes') ? (lead.service ? askGoal() : askCategory()) : say(['No problem! I\'m here if you need anything 🙂']))));
+  }
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const text = input.value.trim();
+    if (!text) return;
+    input.value = '';
+    clearChips();
+    bubble(esc(text), 'me');
+    if (step === 'name') { lead.name = text.replace(/^(my name is|i am|i'm|this is)\s+/i, '').slice(0, 60); return askPhone(); }
+    if (step === 'phone') {
+      const digits = text.replace(/[^\d+]/g, '');
+      if (digits.replace(/\D/g, '').length < 8) return say(['Hmm, that number looks short - could you double-check it? (e.g. +971 50 123 4567)']);
+      lead.phone = digits; return askEmail();
+    }
+    if (step === 'email') {
+      if (text.includes('@')) lead.email = text;
+      return finish();
+    }
+    answer(text);
+  });
+</script>
+
+<style is:global>
+  .cb { position: fixed; right: 22px; bottom: 22px; z-index: 120; font-family: var(--font-body); }
+  .cb-launch { position: relative; width: 64px; height: 64px; border-radius: 50%; border: 0; background: #111; box-shadow: 0 0 0 2px var(--lime), 0 12px 30px rgba(0,0,0,.5), 0 0 30px rgba(214,243,69,.35); display: grid; place-items: center; cursor: pointer; transition: transform .4s var(--ease); }
+  .cb-launch:hover { transform: scale(1.07); }
+  .cb-launch-bird { width: 46px; transition: opacity .3s, transform .4s var(--ease); }
+  .cb-launch-x { position: absolute; inset: 0; display: grid; place-items: center; color: var(--lime); font-size: 34px; line-height: 1; opacity: 0; transform: rotate(-90deg); transition: .4s var(--ease); }
+  .cb-launch-x svg { width: 24px; height: 24px; }
+  .cb.open .cb-launch-bird { opacity: 0; transform: scale(.5); }
+  .cb.open .cb-launch-x { opacity: 1; transform: none; }
+  .cb-dot { position: absolute; top: 2px; right: 2px; width: 14px; height: 14px; border-radius: 50%; background: #25d366; border: 2px solid #111; }
+  .cb.open .cb-dot { display: none; }
+  .motion .cb-launch::after { content: ''; position: absolute; inset: -2px; border-radius: 50%; border: 2px solid var(--lime); animation: cbPing 2.4s ease-out infinite; }
+  .cb.open .cb-launch::after { display: none; }
+  @keyframes cbPing { 0% { transform: scale(1); opacity: .8; } 80%, 100% { transform: scale(1.6); opacity: 0; } }
+
+  .cb-teaser { position: absolute; right: 0; bottom: 78px; width: 270px; padding: 16px 18px; border-radius: 18px 18px 4px 18px; background: #fff; color: #222; font-size: 14px; line-height: 1.5; box-shadow: 0 16px 40px rgba(0,0,0,.4); cursor: pointer; animation: cbIn .5s var(--ease); }
+  .cb-teaser b { display: block; color: #000; margin-bottom: 2px; }
+  .cb-teaser-x { position: absolute; top: 6px; right: 8px; border: 0; background: none; font-size: 18px; color: #888; cursor: pointer; }
+
+  .cb-panel { position: absolute; right: 0; bottom: 80px; width: 380px; height: min(620px, calc(100vh - 130px)); display: flex; flex-direction: column; border-radius: 22px; overflow: hidden; background: #0f0f0f; border: 1px solid rgba(214,243,69,.35); box-shadow: 0 30px 80px rgba(0,0,0,.6), 0 0 50px rgba(214,243,69,.12); animation: cbIn .45s var(--ease); }
+  .cb-panel[hidden] { display: none; }
+  @keyframes cbIn { from { opacity: 0; transform: translateY(20px) scale(.96); } }
+  .cb-head { display: flex; align-items: center; gap: 12px; padding: 14px 14px 14px 16px; background: linear-gradient(120deg, #1d230a, #141414 70%); border-bottom: 1px solid #222; }
+  .cb-ava { width: 44px; height: 44px; border-radius: 50%; background: #0a0a0a; display: grid; place-items: center; padding: 6px; flex: none; box-shadow: 0 0 0 1px rgba(214,243,69,.4); }
+  .cb-ava .lf-bird { --flap: 1.4s; }
+  .cb-head b { display: block; color: #fff; font-family: var(--font-head); font-size: 15px; }
+  .cb-head small { font-size: 12px; color: #9e9e9e; display: flex; align-items: center; gap: 6px; }
+  .cb-head small i { width: 7px; height: 7px; border-radius: 50%; background: #25d366; }
+  .cb-head > div { flex: 1; min-width: 0; }
+  .cb-head-btn { width: 36px; height: 36px; border-radius: 50%; border: 0; background: #222; color: #fff; display: grid; place-items: center; font-size: 22px; cursor: pointer; flex: none; }
+  .cb-head-btn svg { width: 16px; height: 16px; color: var(--lime); }
+  .cb-head-btn:hover { background: #2c2c2c; }
+
+  .cb-body { flex: 1; overflow-y: auto; padding: 18px 14px; display: flex; flex-direction: column; gap: 8px; overscroll-behavior: contain; background-image: radial-gradient(rgba(214,243,69,.06) 1px, transparent 1px); background-size: 14px 14px; }
+  .cb-msg { max-width: 86%; padding: 10px 14px; border-radius: 16px; font-size: 14px; line-height: 1.5; animation: cbMsg .35s var(--ease); }
+  @keyframes cbMsg { from { opacity: 0; transform: translateY(8px); } }
+  .cb-msg.bot { align-self: flex-start; background: #1c1c1c; color: #e6e6e6; border-bottom-left-radius: 4px; }
+  .cb-msg.bot b { color: #fff; }
+  .cb-msg.me { align-self: flex-end; background: var(--lime); color: #000; font-weight: 500; border-bottom-right-radius: 4px; }
+  .cb-link { color: var(--lime); font-weight: 600; }
+  .cb-typing { display: inline-flex; gap: 4px; padding: 4px 0; }
+  .cb-typing i { width: 7px; height: 7px; border-radius: 50%; background: #777; animation: cbDot 1s infinite; }
+  .cb-typing i:nth-child(2) { animation-delay: .15s; } .cb-typing i:nth-child(3) { animation-delay: .3s; }
+  @keyframes cbDot { 0%, 60%, 100% { transform: none; opacity: .5; } 30% { transform: translateY(-4px); opacity: 1; } }
+  .cb-chips { display: flex; flex-wrap: wrap; gap: 7px; padding: 4px 0 4px; animation: cbMsg .35s var(--ease); }
+  .cb-chip { border: 1px solid rgba(214,243,69,.5); background: rgba(214,243,69,.06); color: #eaff9a; padding: 8px 13px; border-radius: 100px; font-size: 13px; cursor: pointer; transition: background .25s, color .25s; text-align: left; }
+  .cb-chip:hover { background: var(--lime); color: #000; }
+  .cb-chip.alt { border-color: #333; background: #181818; color: #ccc; }
+  .cb-chip.alt:hover { background: #fff; color: #000; }
+  .cb-summary { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; min-width: 220px; }
+  .cb-summary li { display: flex; justify-content: space-between; gap: 12px; font-size: 13px; border-bottom: 1px dashed #333; padding-bottom: 5px; }
+  .cb-summary li:last-child { border: 0; }
+  .cb-summary span { color: #8a8a8a; }
+  .cb-summary b { text-align: right; }
+  .cb-actions { display: grid; gap: 8px; min-width: 240px; }
+  .cb-actions small { color: #9e9e9e; }
+  .cb-act { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 11px 14px; border-radius: 12px; font-weight: 600; font-family: var(--font-head); font-size: 14px; }
+  .cb-act.wa { background: #25d366; color: #fff; }
+  .cb-act.call { background: var(--lime); color: #000; }
+  .cb-act.mail { background: #262626; color: #fff; }
+  .cb-act:hover { filter: brightness(1.08); }
+
+  .cb-input { display: flex; gap: 8px; padding: 12px; border-top: 1px solid #222; background: #121212; }
+  .cb-input input { flex: 1; min-width: 0; background: #0a0a0a; border: 1px solid #2a2a2a; border-radius: 100px; color: #fff; padding: 11px 16px; font: inherit; font-size: 14px; outline: none; }
+  .cb-input input:focus { border-color: var(--lime); }
+  .cb-input button { width: 44px; height: 44px; border-radius: 50%; border: 0; background: var(--lime); color: #000; display: grid; place-items: center; cursor: pointer; flex: none; }
+  .cb-input button svg { width: 18px; height: 18px; }
+  .cb-powered { text-align: center; font-size: 11px; color: #555; padding: 0 0 8px; background: #121212; }
+
+  .to-top { bottom: 100px !important; }
+  @media (max-width: 640px) {
+    .cb { right: 14px; bottom: 14px; }
+    .cb-panel { position: fixed; inset: 0; width: auto; height: auto; border-radius: 0; border: 0; bottom: 0; }
+    .cb.open .cb-launch { display: none; }
+    .cb-teaser { width: 240px; }
+    body:has(.sp-bar) .cb { bottom: 84px; }
+    body:has(.sp-bar) .to-top { bottom: 160px !important; }
+  }
+</style>

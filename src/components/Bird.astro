@@ -1,0 +1,11 @@
+---
+// The Limeflock bird from the original artwork, in two layers: one solid wing (extended under the body
+// so the joint never opens) and the body on top. The wing pivots at the shoulder to flap.
+interface Props { uid?: string; class?: string; simple?: boolean; eager?: boolean }
+const { class: cls, eager = false } = Astro.props;
+const load = eager ? 'eager' : 'lazy';
+---
+<div class:list={['lf-bird', cls]} aria-hidden="true">
+  <img class="b-wing" src="/img/bird/wing.webp" alt="" width="1000" height="774" loading={load} decoding="async" />
+  <img class="b-body" src="/img/bird/body.webp" alt="" width="1000" height="774" loading={load} decoding="async" />
+</div>

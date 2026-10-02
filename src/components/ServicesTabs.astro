@@ -1,0 +1,50 @@
+---
+import Icon from './Icon.astro';
+import Btn from './Btn.astro';
+import { categories, byCat } from '../data/services';
+const people = ['s1-img-1', 's1-img-2', 's1-img-3', 's1-img-4', 's1-img-5', 's1-img-6', 's1-img-7'];
+---
+<section class="section">
+  <div class="container">
+    <div class="sec-head">
+      <div>
+        <span class="label">(02) Our Services</span>
+        <h2 class="h-lg reveal-text">Everything you need to grow, under one roof</h2>
+      </div>
+      <p>Nine specialist teams covering digital, AI, outdoor and on-ground marketing - so your brand stands out, connects and grows.</p>
+    </div>
+
+    <div class="svc-tabs" id="svc-tabs">
+      <div class="svc-list" role="tablist">
+        {categories.map((c, i) => (
+          <button role="tab" class:list={{ active: i === 0 }} data-tab={i}>{i + 1}. {c.title}</button>
+        ))}
+      </div>
+      {categories.map((c, i) => (
+        <div class:list={['svc-panel', { active: i === 0 }]} data-panel={i}>
+          <div class="card svc-detail">
+            <Icon name={c.icon} class="ico" />
+            <p><strong>{c.title}</strong> - {c.desc}</p>
+            <ul>
+              {byCat(c.slug).slice(0, 6).map((sv) => <li><a href={`/${sv.slug}/`}>{sv.title}</a></li>)}
+            </ul>
+            <div><Btn href={`/services/#${c.slug}`} variant="dark">Explore {byCat(c.slug).length} services</Btn></div>
+          </div>
+          <div class="svc-img">
+            <img src={i % 2 ? `/img/theme/${people[i % people.length]}.webp` : c.img} alt={c.title} loading="lazy" />
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+<script>
+  const root = document.getElementById('svc-tabs');
+  root?.querySelectorAll<HTMLButtonElement>('[data-tab]').forEach((b) => {
+    b.addEventListener('click', () => {
+      root.querySelectorAll('.active').forEach((x) => x.classList.remove('active'));
+      b.classList.add('active');
+      root.querySelector(`[data-panel="${b.dataset.tab}"]`)?.classList.add('active');
+    });
+  });
+</script>

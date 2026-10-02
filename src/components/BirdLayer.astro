@@ -1,0 +1,28 @@
+---
+// Site-wide bird pieces: first-visit preloader and the cursor-following bird.
+import Bird from './Bird.astro';
+---
+<div class="preloader" id="preloader" aria-hidden="true">
+  <div class="pl-inner">
+    <div class="pl-bird"><Bird uid="pl" class="flap" eager /></div>
+    <div class="pl-name">Limeflock</div>
+    <div class="pl-bar"><span></span></div>
+  </div>
+</div>
+<script is:inline>
+  // show the preloader once per session; skip it for reduced motion
+  (function () {
+    var pl = document.getElementById('preloader');
+    var seen = false;
+    try { seen = sessionStorage.getItem('lf-seen') === '1'; sessionStorage.setItem('lf-seen', '1'); } catch (e) {}
+    if (seen || matchMedia('(prefers-reduced-motion: reduce)').matches) { pl.classList.add('skip'); return; }
+    var t0 = Date.now();
+    addEventListener('load', function () {
+      setTimeout(function () {
+        pl.classList.add('done');
+        setTimeout(function () { pl.classList.add('skip'); }, 1200);
+      }, Math.max(0, 1300 - (Date.now() - t0)));
+    });
+  })();
+</script>
+<div class="cursor-bird" id="cursor-bird" aria-hidden="true"><div class="cb-flip"><Bird uid="cb" simple class="flap" eager /></div></div>

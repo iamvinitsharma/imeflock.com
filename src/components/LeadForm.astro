@@ -1,0 +1,48 @@
+---
+import Btn from './Btn.astro';
+import Icon from './Icon.astro';
+import { site } from '../data/site';
+interface Props { service?: string; title?: string }
+const { service = '', title = 'Get your free proposal' } = Astro.props;
+const uid = Math.random().toString(36).slice(2, 8);
+---
+<form class="lead-form" data-lead id={`lf-${uid}`}>
+  <div class="lf-top">
+    <span class="lf-live"><i></i> Replies in under 1 hour</span>
+    <h3>{title}</h3>
+  </div>
+  <div class="lf-row">
+    <label class="lf-field"><span>Full name</span><input name="name" required autocomplete="name" placeholder="Your name" /></label>
+    <label class="lf-field"><span>Phone / WhatsApp</span><input name="phone" type="tel" required autocomplete="tel" placeholder="+971 5X XXX XXXX" /></label>
+  </div>
+  <label class="lf-field"><span>Email</span><input name="email" type="email" autocomplete="email" placeholder="you@company.com" /></label>
+  <div class="lf-row">
+    <label class="lf-field"><span>Service</span><input name="service" value={service} placeholder="What do you need?" /></label>
+    <label class="lf-field"><span>Monthly budget</span>
+      <select name="budget">
+        <option value="">Select budget</option>
+        <option>Under AED 3,000</option>
+        <option>AED 3,000 – 10,000</option>
+        <option>AED 10,000 – 25,000</option>
+        <option>AED 25,000+</option>
+        <option>Not sure yet</option>
+      </select>
+    </label>
+  </div>
+  <label class="lf-field"><span>Project details</span><textarea name="message" rows="3" placeholder="Tell us about your goals, timeline, locations…"></textarea></label>
+  <Btn href="#" type="submit" class="lf-submit">Get my free proposal</Btn>
+  <p class="lf-note"><Icon name="check" /> No spam. Free consultation, fixed transparent quote.</p>
+  <p class="lf-done" hidden>Opening WhatsApp… we'll reply within the hour.</p>
+</form>
+<script define:vars={{ wa: site.whatsapp }}>
+  document.querySelectorAll('form[data-lead]:not([data-bound])').forEach((f) => {
+    f.dataset.bound = '1';
+    f.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const d = Object.fromEntries(new FormData(f));
+      const lines = [`Hi Limeflock, I'm ${d.name}.`, `Phone: ${d.phone}`, d.email && `Email: ${d.email}`, d.service && `Service: ${d.service}`, d.budget && `Budget: ${d.budget}`, d.message && `\n${d.message}`].filter(Boolean);
+      window.open(`${wa}?text=${encodeURIComponent(lines.join('\n'))}`, '_blank');
+      f.querySelector('.lf-done').hidden = false;
+    });
+  });
+</script>

@@ -1,0 +1,104 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Icon from '../components/Icon.astro';
+import Btn from '../components/Btn.astro';
+import ClientsBand from '../components/ClientsBand.astro';
+import AboutSection from '../components/AboutSection.astro';
+import ServicesTabs from '../components/ServicesTabs.astro';
+import WhyChoose from '../components/WhyChoose.astro';
+import Facts from '../components/Facts.astro';
+import PortfolioGrid from '../components/PortfolioGrid.astro';
+import Testimonials from '../components/Testimonials.astro';
+import Steps from '../components/Steps.astro';
+import ContactFaq from '../components/ContactFaq.astro';
+import Connect from '../components/Connect.astro';
+import FlightPath from '../components/FlightPath.astro';
+import Bird from '../components/Bird.astro';
+import { site } from '../data/site';
+import { services } from '../data/services';
+const hot = services.filter((s) => s.hot).slice(0, 3);
+const ringIcons = ['whatsapp', 'x', 'linkedin', 'instagram', 'facebook'];
+---
+<Layout title="Limeflock | Digital Growth Partner - Advertising & Marketing Agency in Dubai">
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-flock" id="hero-flock">
+      {[1, 2, 3, 4, 5, 6, 7].map((n) => <div class="fb"><Bird uid={`hf${n}`} simple class="flap" /></div>)}
+    </div>
+    <img class="hero-person" src="/img/theme/h1-img-1.webp" alt="" width="860" height="994" fetchpriority="high" />
+    <div class="container">
+      <h1 class="hero-title">
+        <span class="l1 split-hero">Limeflock</span>
+        <span class="award">{'{ Your Digital Growth Partner }'}</span>
+        <span class="l2 split-hero">Growth Agency</span>
+      </h1>
+      <div class="hero-bottom">
+        <button class="hero-play" id="hero-play" aria-label="Play showreel">
+          <video src="/video/plybtn-video-1.mp4" autoplay muted loop playsinline></video>
+          <span><i><Icon name="play" /></i></span>
+        </button>
+        <p class="hero-text">We build stunning websites, run performance campaigns and book billboards across Dubai - turning clicks and streets into customers.</p>
+        <Btn href="/about/" variant="dark">About Our Agency</Btn>
+      </div>
+    </div>
+    <div class="hero-ring">
+      <span class="hero-star">✱</span>
+      <div class="ring-outer"></div>
+      <div class="ring">
+        {ringIcons.map((ic, i) => {
+          const a = Math.PI * (0.62 + (0.76 * i) / (ringIcons.length - 1)); // spread over the visible left arc
+          const href = ic === 'whatsapp' ? site.whatsapp : site.social.find((x) => x.icon === ic)?.href;
+          return <a href={href} target="_blank" rel="noopener" aria-label={ic} style={`left:calc(50% + ${Math.cos(a) * 175}px - 18px);top:calc(50% + ${Math.sin(a) * 175}px - 18px)`}><Icon name={ic} /></a>;
+        })}
+      </div>
+    </div>
+  </section>
+
+  <ClientsBand />
+  <AboutSection />
+  <ServicesTabs />
+  <FlightPath />
+  <WhyChoose />
+  <Facts />
+  <PortfolioGrid limit={4} fly />
+  <Testimonials />
+  <Steps />
+  <ContactFaq />
+
+  <section class="section bg-dots" style="background-color:var(--bg-2)">
+    <div class="container">
+      <div class="sec-head">
+        <div>
+          <span class="label">(10) Popular Services</span>
+          <h2 class="h-lg reveal-text">What Dubai brands hire us for most</h2>
+        </div>
+        <p>Our most-requested services this year - from websites that convert to outdoor campaigns that get seen.</p>
+      </div>
+      <div class="blog-grid">
+        {hot.map((s) => (
+          <a href={`/${s.slug}/`} class="post rv">
+            <div class="thumb clip-lr"><img src={s.img} alt={s.title} loading="lazy" /><span class="tag">{s.title}</span></div>
+            <small>Limeflock · Dubai</small>
+            <h4>{s.desc}</h4>
+          </a>
+        ))}
+      </div>
+      <div class="center" style="margin-top:50px"><Btn href="/services/" variant="dark">All {services.length} services</Btn></div>
+    </div>
+  </section>
+
+  <Connect />
+</Layout>
+
+<dialog id="reel" style="padding:0;border:0;background:#000;border-radius:16px;max-width:min(960px,92vw)">
+  <video src="/video/plybtn-video-1.mp4" controls playsinline style="width:100%"></video>
+</dialog>
+<script>
+  const dlg = document.getElementById('reel') as HTMLDialogElement;
+  const vid = dlg.querySelector('video')!;
+  document.getElementById('hero-play')?.addEventListener('click', () => { dlg.showModal(); vid.play(); });
+  dlg.addEventListener('click', (e) => { if (e.target === dlg) { vid.pause(); dlg.close(); } });
+</script>
+<style>
+  dialog::backdrop { background: rgba(0, 0, 0, .8); }
+</style>

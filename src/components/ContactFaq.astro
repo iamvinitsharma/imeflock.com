@@ -1,0 +1,49 @@
+---
+import Btn from './Btn.astro';
+import { faqs, site } from '../data/site';
+import { categories } from '../data/services';
+interface Props { service?: string }
+const { service } = Astro.props;
+---
+<section class="section">
+  <div class="container cf-grid">
+    <div class="form-card glow" id="contact-form">
+      <span class="label">Response time: within 1 hour</span>
+      <h3>Tell us about your project</h3>
+      <form id="lead-form">
+        <div class="field"><input class="type-ph" name="name" placeholder="Full name" required autocomplete="name" /></div>
+        <div class="field"><input class="type-ph" name="phone" type="tel" placeholder="Phone / WhatsApp" required autocomplete="tel" /></div>
+        <div class="field"><input class="type-ph" name="email" type="email" placeholder="Your email" autocomplete="email" /></div>
+        <div class="field">
+          <select name="service" aria-label="Service">
+            <option value="">Service you're interested in</option>
+            {categories.map((c) => <option selected={service === c.title}>{c.title}</option>)}
+          </select>
+        </div>
+        <div class="field"><textarea class="type-ph" name="message" placeholder="Your message"></textarea></div>
+        <Btn href="#" type="submit">Send via WhatsApp</Btn>
+        <p class="form-note" id="form-note"></p>
+      </form>
+    </div>
+    <div>
+      <span class="label">(08) FAQs</span>
+      <h2 class="h-lg reveal-text" style="margin-bottom:30px">Learn more from FAQs</h2>
+      {faqs.map((f, i) => (
+        <details class="faq" open={i === 0}>
+          <summary><em>{String(i + 1).padStart(2, '0')}</em>{f.q}<i>+</i></summary>
+          <div class="ans">{f.a}</div>
+        </details>
+      ))}
+    </div>
+  </div>
+</section>
+<script define:vars={{ wa: site.whatsapp }}>
+  // No backend: hand the enquiry to WhatsApp with the details pre-filled.
+  document.getElementById('lead-form').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const d = Object.fromEntries(new FormData(e.target));
+    const text = `Hi Limeflock, I'm ${d.name}.\nPhone: ${d.phone}${d.email ? `\nEmail: ${d.email}` : ''}${d.service ? `\nService: ${d.service}` : ''}${d.message ? `\n\n${d.message}` : ''}`;
+    window.open(`${wa}?text=${encodeURIComponent(text)}`, '_blank');
+    document.getElementById('form-note').textContent = 'Opening WhatsApp… we usually reply within the hour.';
+  });
+</script>

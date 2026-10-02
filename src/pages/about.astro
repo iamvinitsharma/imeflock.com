@@ -1,0 +1,45 @@
+---
+import Layout from '../layouts/Layout.astro';
+import PageHero from '../components/PageHero.astro';
+import AboutSection from '../components/AboutSection.astro';
+import WhyChoose from '../components/WhyChoose.astro';
+import Facts from '../components/Facts.astro';
+import Testimonials from '../components/Testimonials.astro';
+import ClientsBand from '../components/ClientsBand.astro';
+import Connect from '../components/Connect.astro';
+
+const values = [
+  { t: 'Creativity with Purpose', d: 'We blend bold ideas with smart strategy to create work that performs. Every design and campaign is driven by results, not just aesthetics.', img: '/img/theme/s1-img-2.webp' },
+  { t: 'Client-Centered Collaboration', d: 'Your goals guide everything we do - we are partners, not just providers. Clear communication and shared success are at our core.', img: '/img/theme/s1-img-5.webp' },
+  { t: 'Growth Mindset', d: 'We never stop learning, evolving or pushing boundaries - from AI search to programmatic outdoor. Your growth is our mission.', img: '/img/theme/s1-img-3.webp' },
+  { t: 'Integrity & Transparency', d: 'We build trust through honest work and measurable outcomes. No fluff, no shortcuts - just real results you can count on.', img: '/img/theme/s1-img-7.webp' },
+];
+---
+<Layout title="About Us | Limeflock Dubai" description="Limeflock is a Dubai advertising and digital marketing agency in Abu Hail, combining web, SEO, AI, paid media and outdoor advertising.">
+  <PageHero title="About Limeflock" crumbs={[{ label: 'About Us' }]} sub="Your Digital Growth Partner - a Dubai agency where websites, digital ads and outdoor media work together." />
+  <AboutSection />
+  <ClientsBand />
+  <section class="section">
+    <div class="container">
+      <div class="sec-head">
+        <div>
+          <span class="label">Values & Culture</span>
+          <h2 class="h-lg reveal-text">What drives everything we do</h2>
+        </div>
+        <p>Our culture is built on purpose, passion and a commitment to helping brands thrive - online and offline.</p>
+      </div>
+      <div class="svc-grid" style="grid-template-columns:repeat(auto-fit,minmax(260px,1fr))">
+        {values.map((v) => (
+          <div class="svc-card rv">
+            <div class="thumb"><img src={v.img} alt="" loading="lazy" style="filter:grayscale(1)" /></div>
+            <div class="body"><h3>{v.t}</h3><p style="margin:0">{v.d}</p></div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+  <WhyChoose />
+  <Facts />
+  <Testimonials />
+  <Connect />
+</Layout>

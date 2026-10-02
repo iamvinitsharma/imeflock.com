@@ -1,0 +1,109 @@
+---
+import Icon from './Icon.astro';
+import Btn from './Btn.astro';
+import { nav, site } from '../data/site';
+import { categories, byCat } from '../data/services';
+const path = Astro.url.pathname;
+const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWith(href));
+// mega menu: stack short groups so the panel stays short (5 balanced columns)
+const megaCols = [['web', 'seo'], ['performance', 'ai'], ['ooh'], ['media', 'branding'], ['direct', 'events']]
+  .map((col) => col.map((slug) => categories.find((c) => c.slug === slug)!));
+---
+<header class="header" id="header">
+  <div class="container">
+    <div class="header-inner">
+      <a href="/" class="logo" aria-label="Limeflock home"><img src="/img/logo-light.webp" alt="Limeflock" width="130" height="45" /></a>
+      <ul class="menu">
+        {nav.map((item) => (
+          <li class:list={{ 'has-mega': item.mega }}>
+            <a href={item.href} class:list={{ active: isActive(item.href) }}>
+              <span class="lbl">{item.label}</span>
+              {item.mega && <span class="dot"><Icon name="down" /></span>}
+            </a>
+            {item.mega && (
+              <div class="mega">
+                {megaCols.map((col) => (
+                  <div class="mega-col">
+                    {col.map((c) => (
+                      <div class="mega-group">
+                        <a href={`/services/#${c.slug}`} class="mega-head">
+                          <Icon name={c.icon} />
+                          <span>{c.title}</span>
+                        </a>
+                        {byCat(c.slug).map((sv) => <a href={`/${sv.slug}/`} class="mega-link">{sv.title}</a>)}
+                      </div>
+                    ))}
+                  </div>
+                ))}
+                <div class="mega-foot">
+                  <span>43 services across 9 specialist teams - digital, AI, outdoor and on-ground.</span>
+                  <a href="/services/" class="mega-all">View all services <Icon name="arrow" /></a>
+                </div>
+              </div>
+            )}
+          </li>
+        ))}
+      </ul>
+      <div class="header-cta">
+        <Btn href="/contact/">Get in Touch</Btn>
+        <button class="burger" id="burger" aria-label="Open menu"><Icon name="menu" /></button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="drawer" id="drawer" aria-hidden="true">
+  <div class="drawer-panel" role="dialog" aria-label="Menu">
+    <div class="drawer-top">
+      <a href="/"><img src="/img/logo-light.webp" alt="Limeflock" width="130" height="45" /></a>
+      <button class="drawer-close" id="drawer-close" aria-label="Close menu"><span></span><span></span></button>
+    </div>
+
+    <nav class="m-nav">
+      {nav.map((item, i) =>
+        item.mega ? (
+          <details class="m-item m-services" style={`--i:${i}`}>
+            <summary>
+              <em>0{i + 1}</em><span>{item.label}</span><i class="m-plus"></i>
+            </summary>
+            <div class="m-sub">
+              {categories.map((c) => (
+                <details class="m-cat">
+                  <summary>
+                    <span class="m-cat-ico"><Icon name={c.icon} /></span>
+                    <span class="m-cat-t">{c.title}</span>
+                    <small>{byCat(c.slug).length}</small>
+                    <Icon name="down" class="m-chev" />
+                  </summary>
+                  <div class="m-links">
+                    {byCat(c.slug).map((sv) => <a href={`/${sv.slug}/`}>{sv.title}</a>)}
+                  </div>
+                </details>
+              ))}
+              <a href="/services/" class="m-all">View all 43 services <Icon name="arrow" /></a>
+            </div>
+          </details>
+        ) : (
+          <a href={item.href} class:list={['m-item', { active: isActive(item.href) }]} style={`--i:${i}`}>
+            <em>0{i + 1}</em><span>{item.label}</span><Icon name="arrow" class="m-arrow" />
+          </a>
+        )
+      )}
+    </nav>
+
+    <div class="m-foot">
+      <div class="m-actions">
+        <a href={site.phoneHref} class="m-act"><Icon name="phone" />Call</a>
+        <a href={site.whatsapp} class="m-act wa" target="_blank" rel="noopener"><Icon name="whatsapp" />WhatsApp</a>
+      </div>
+      <Btn href="/contact/" class="m-cta">Get a free proposal</Btn>
+      <div class="m-info">
+        <a href={`mailto:${site.email}`}>{site.email}</a>
+        <span>{site.address[0]}, {site.address[1]}</span>
+      </div>
+      <div class="m-social">
+        {site.social.map((x) => <a href={x.href} aria-label={x.name} target="_blank" rel="noopener"><Icon name={x.icon} /></a>)}
+      </div>
+    </div>
+  </div>
+</div>

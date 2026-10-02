@@ -1,0 +1,20 @@
+---
+import Layout from '../layouts/Layout.astro';
+import PageHero from '../components/PageHero.astro';
+import PortfolioGrid from '../components/PortfolioGrid.astro';
+import ClientsBand from '../components/ClientsBand.astro';
+import Btn from '../components/Btn.astro';
+---
+<Layout title="Portfolio | Limeflock Dubai" description="Websites, brands and campaigns built by Limeflock for clients in the UAE and worldwide.">
+  <PageHero title="Our Portfolio" crumbs={[{ label: 'Portfolio' }]} />
+  <PortfolioGrid head={false} />
+  <ClientsBand />
+  <section class="section">
+    <div class="container">
+      <div class="cta-band glow">
+        <h2>Your brand could be next. Let's build something people remember.</h2>
+        <Btn href="/contact/">Start a project</Btn>
+      </div>
+    </div>
+  </section>
+</Layout>

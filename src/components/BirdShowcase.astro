@@ -1,0 +1,17 @@
+---
+// Large brand creative: the bird fans its feathers open on scroll, floats, and turns toward the cursor.
+import Bird from './Bird.astro';
+const ring = 'LIMEFLOCK • DIGITAL GROWTH PARTNER • DUBAI • ';
+---
+<div class="bird-show" id="bird-show">
+  <div class="bs-glow"></div>
+  <svg class="bs-ring" viewBox="0 0 400 400" aria-hidden="true">
+    <defs><path id="bs-circle" d="M200,200 m-170,0 a170,170 0 1,1 340,0 a170,170 0 1,1 -340,0" /></defs>
+    <text><textPath href="#bs-circle" textLength="1060">{ring.repeat(2)}</textPath></text>
+  </svg>
+  <div class="bs-orbit" aria-hidden="true">
+    <span><Bird uid="bo1" simple class="flap" /></span>
+    <span><Bird uid="bo2" simple class="flap" /></span>
+  </div>
+  <div class="bs-bird"><Bird uid="bs" /></div>
+</div>

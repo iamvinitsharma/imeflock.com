@@ -1,0 +1,78 @@
+---
+import '../styles/global.css';
+import '../styles/service-page.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import BirdLayer from '../components/BirdLayer.astro';
+import ChatBot from '../components/ChatBot.astro';
+import { site } from '../data/site';
+interface Props { title: string; description?: string; image?: string }
+const { title, description = 'Limeflock is a Dubai advertising & digital marketing agency: web design, SEO, Google & Meta Ads, AI automation, billboards, metro, taxi and LED truck advertising.', image = '/img/theme/h1-bg-img-1.webp' } = Astro.props;
+const canonical = new URL(Astro.url.pathname, site.url).href;
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'ProfessionalService',
+  name: 'Limeflock',
+  url: site.url,
+  telephone: '+971541916252',
+  image: new URL('/img/logo-light.webp', site.url).href,
+  address: { '@type': 'PostalAddress', streetAddress: '234, Al Mamzar Building, Abu Hail', addressLocality: 'Dubai', postOfficeBoxNumber: '33539', addressCountry: 'AE' },
+  areaServed: 'United Arab Emirates',
+};
+---
+<!doctype html>
+<html lang="en">
+<head>
+  <script is:inline>document.documentElement.classList.add(matchMedia('(prefers-reduced-motion: reduce)').matches ? 'no-motion' : 'motion')</script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{title}</title>
+  <meta name="description" content={description} />
+  <link rel="canonical" href={canonical} />
+  <link rel="icon" href="/favicon.png" />
+  <meta property="og:title" content={title} />
+  <meta property="og:description" content={description} />
+  <meta property="og:image" content={new URL(image, site.url).href} />
+  <meta property="og:url" content={canonical} />
+  <meta name="theme-color" content="#0a0a0a" />
+  {import.meta.env.PUBLIC_NOINDEX && <meta name="robots" content="noindex, nofollow" />}
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <script type="application/ld+json" set:html={JSON.stringify(schema)} />
+</head>
+<body>
+  <BirdLayer />
+  <Header />
+  <main><slot /></main>
+  <Footer />
+  <ChatBot />
+  <script>
+    import { scrollToTop } from '../scripts/animations';
+    // header hides on scroll down, returns on scroll up
+    const header = document.getElementById('header')!;
+    const toTop = document.getElementById('to-top')!;
+    let last = 0;
+    addEventListener('scroll', () => {
+      const y = scrollY;
+      header.classList.toggle('hide', y > 300 && y > last);
+      header.classList.toggle('scrolled', y > 50);
+      toTop.classList.toggle('show', y > 600);
+      last = y;
+    }, { passive: true });
+    toTop.addEventListener('click', scrollToTop);
+
+    // mobile drawer
+    const drawer = document.getElementById('drawer')!;
+    const setMenu = (open: boolean) => {
+      drawer.classList.toggle('open', open);
+      drawer.setAttribute('aria-hidden', String(!open));
+      document.documentElement.classList.toggle('menu-open', open);
+    };
+    document.getElementById('burger')?.addEventListener('click', () => setMenu(true));
+    document.getElementById('drawer-close')?.addEventListener('click', () => setMenu(false));
+    drawer.addEventListener('click', (e) => { if (e.target === drawer || (e.target as HTMLElement).closest('.drawer-panel a')) setMenu(false); });
+    addEventListener('keydown', (e) => { if (e.key === 'Escape') setMenu(false); });
+  </script>
+</body>
+</html>

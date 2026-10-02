@@ -1,0 +1,30 @@
+---
+// Scroll-driven brand moment: the Limeflock bird flies along a dotted path and lights up each stop.
+import Bird from './Bird.astro';
+const stops = [
+  { t: 'Idea', s: 'Strategy & research', x: 18, y: 64 },
+  { t: 'Launch', s: 'Web, ads & outdoor', x: 50, y: 34 },
+  { t: 'Growth', s: 'Leads, sales, scale', x: 82, y: 58 },
+];
+---
+<section class="flight" id="flight">
+  <div class="container flight-head">
+    <span class="label">Fly with the flock</span>
+    <h2 class="h-lg reveal-text">We take your brand from idea to new heights</h2>
+  </div>
+  <div class="flight-stage">
+    <svg class="flight-svg" viewBox="0 0 1440 360" preserveAspectRatio="none" aria-hidden="true">
+      <path id="fp-path" d="M-40,300 C160,300 200,230 260,230 C380,230 420,120 720,122 C980,124 1000,220 1180,210 C1300,204 1360,120 1500,60" fill="none" />
+      <path class="fp-base" d="M-40,300 C160,300 200,230 260,230 C380,230 420,120 720,122 C980,124 1000,220 1180,210 C1300,204 1360,120 1500,60" fill="none" />
+      <path class="fp-trail" pathLength="1" d="M-40,300 C160,300 200,230 260,230 C380,230 420,120 720,122 C980,124 1000,220 1180,210 C1300,204 1360,120 1500,60" fill="none" />
+    </svg>
+    {stops.map((s, i) => (
+      <div class="fp-stop" data-at={[0.24, 0.5, 0.78][i]} style={`left:${s.x}%;top:${s.y}%`}>
+        <span class="dot"></span>
+        <b>{s.t}</b>
+        <small>{s.s}</small>
+      </div>
+    ))}
+    <div class="fp-bird"><Bird uid="fp" class="flap" /></div>
+  </div>
+</section>

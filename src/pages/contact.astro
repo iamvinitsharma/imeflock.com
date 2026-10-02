@@ -1,0 +1,21 @@
+---
+import Layout from '../layouts/Layout.astro';
+import PageHero from '../components/PageHero.astro';
+import ContactFaq from '../components/ContactFaq.astro';
+import Connect from '../components/Connect.astro';
+---
+<Layout title="Contact Us | Limeflock Dubai" description="Contact Limeflock - 234, Al Mamzar Building, Abu Hail, Dubai. Call or WhatsApp +971 54 191 6252.">
+  <PageHero title="Contact Us" crumbs={[{ label: 'Contact' }]} sub="Call, WhatsApp or send us your brief - we usually reply within the hour." />
+  <Connect />
+  <ContactFaq />
+  <section style="padding:0 0 100px">
+    <div class="container">
+      <iframe
+        title="Limeflock office map"
+        src="https://www.google.com/maps?q=Al+Mamzar+Building,+Abu+Hail,+Dubai&output=embed"
+        style="width:100%;height:420px;border:0;border-radius:20px;filter:grayscale(1) invert(.92) contrast(.9)"
+        loading="lazy"
+        referrerpolicy="no-referrer-when-downgrade"></iframe>
+    </div>
+  </section>
+</Layout>

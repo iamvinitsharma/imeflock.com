@@ -1,0 +1,32 @@
+---
+import Btn from './Btn.astro';
+import { works } from '../data/portfolio';
+interface Props { limit?: number; head?: boolean; fly?: boolean }
+const { limit = works.length, head = true, fly = false } = Astro.props;
+---
+<section class="section">
+  <div class="container">
+    {head && (
+      <div class="sec-head">
+        <div>
+          <span class="label">(05) Our Work</span>
+          <h2 class="h-lg reveal-text">Websites & campaigns we're proud of</h2>
+        </div>
+        <p>A selection of recent websites and brand launches for clients in the UAE, UK, US, Canada and India.</p>
+      </div>
+    )}
+    <div class:list={['portfolio-grid', { fly }]}>
+      {works.slice(0, limit).map((w) => (
+        <div class:list={['work-item', { rv: !fly }]}>
+          <div class="work">
+            <img src={w.img} alt={`${w.title} website`} loading="lazy" />
+            <div class="tags">{w.tags.map((t) => <span class="tag">{t}</span>)}</div>
+            <a href="/portfolio/" class="view" aria-label={`View ${w.title}`}>View</a>
+          </div>
+          <h4 style="font-size:20px;margin-top:16px">{w.title}</h4>
+        </div>
+      ))}
+    </div>
+    {limit < works.length && <div class="center" style="margin-top:50px"><Btn href="/portfolio/" variant="dark">More Portfolio</Btn></div>}
+  </div>
+</section>

@@ -1,0 +1,25 @@
+---
+import { steps } from '../data/site';
+---
+<section class="section" style="background:#000">
+  <div class="container center">
+    <span class="label">(07) Process</span>
+    <h2 class="h-lg reveal-text">3 easy steps to get started</h2>
+    <p style="max-width:460px;margin:20px auto 0">Our three-step method blends strategy and creativity while keeping you in the loop.</p>
+  </div>
+  <div class="container">
+    <div class="timeline" id="timeline">
+      <span class="progress"></span>
+      {steps.map((s) => (
+        <div class="step">
+          <span class="num">{+s.n}</span>
+          <div class="card" style="text-align:left">
+            <span class="time">{s.time}</span>
+            <h4><em>{s.n}.</em>{s.title}</h4>
+            <p>{s.text}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>

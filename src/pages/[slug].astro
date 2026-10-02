@@ -1,0 +1,220 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Icon from '../components/Icon.astro';
+import Btn from '../components/Btn.astro';
+import ClientsBand from '../components/ClientsBand.astro';
+import Steps from '../components/Steps.astro';
+import LeadForm from '../components/LeadForm.astro';
+import { services, byCat, catOf, type Service } from '../data/services';
+import { site, testimonials } from '../data/site';
+import { works } from '../data/portfolio';
+
+export function getStaticPaths() {
+  return services.map((s) => ({ params: { slug: s.slug }, props: { s } }));
+}
+const { s } = Astro.props as { s: Service };
+const cat = catOf(s.cat);
+const siblings = byCat(s.cat);
+const related = [...siblings.filter((x) => x.slug !== s.slug), ...services.filter((x) => x.cat !== s.cat && x.hot)].slice(0, 4);
+const lower = s.title; // keep acronyms (AI, SEO, OOH…) and brand names intact
+const inDubai = /dubai/i.test(s.title) ? '' : ' in Dubai';
+const idx = services.indexOf(s);
+const quote = testimonials[idx % testimonials.length];
+const proof = [works[idx % works.length], works[(idx + 3) % works.length]];
+const isOOH = s.cat === 'ooh' || s.cat === 'events' || s.cat === 'media';
+
+const benefits = [
+  { icon: 'target', t: 'Built around your goals', d: `Every ${lower} plan starts with your numbers - leads, sales or reach - not a generic package.` },
+  { icon: 'chart', t: 'Clear reporting', d: 'Simple monthly reports in plain English: what we did, what it delivered, what we do next.' },
+  { icon: 'users', t: 'One dedicated manager', d: 'A single point of contact on WhatsApp who knows your business and replies fast.' },
+  { icon: 'bolt', t: 'Fast launch', d: isOOH ? 'Bookings, approvals, design and printing handled - campaigns live in days, not weeks.' : 'Kick-off within 48 hours, with the first results visible in the first weeks.' },
+  { icon: 'eye', t: 'Transparent pricing', d: 'Fixed, itemised quotes before we start. No hidden fees, no long lock-in contracts.' },
+  { icon: 'spark', t: 'Creative that converts', d: 'In-house designers, copywriters and video team - bilingual English & Arabic.' },
+];
+
+const faqs = [
+  { q: `How much does ${lower} cost in Dubai?`, a: `It depends on scope, ${isOOH ? 'locations, duration and production' : 'goals and competition'}. After a free 15-minute call we send a fixed, itemised quote - most clients get it the same day.` },
+  { q: 'How quickly can you start?', a: isOOH ? 'Most outdoor campaigns go live within 7–14 days including approvals, design and printing. Digital screens can launch faster.' : 'We can kick off within 48 hours of approval. You will see the plan, timeline and first deliverables in week one.' },
+  { q: 'Will I get reports?', a: 'Yes. You get a clear report every month (weekly for active ad campaigns) plus a shared dashboard where relevant.' },
+  { q: `Can you combine ${lower} with other services?`, a: `Absolutely - most clients pair ${lower} with ${related.slice(0, 2).map((r) => r.title).join(' and ')}. One team, one plan, one report.` },
+  { q: 'Do you work with businesses outside Dubai?', a: 'Yes - we serve clients across the UAE and GCC, and digital services worldwide.' },
+];
+const faqSchema = { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: faqs.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })) };
+const svcSchema = { '@context': 'https://schema.org', '@type': 'Service', name: `${s.title}${inDubai}`, description: s.desc, areaServed: 'United Arab Emirates', provider: { '@type': 'ProfessionalService', name: 'Limeflock', url: site.url, telephone: '+971541916252' } };
+---
+<Layout title={`${s.title}${inDubai} | Limeflock`} description={s.desc} image={s.img}>
+  <script type="application/ld+json" set:html={JSON.stringify(faqSchema)} />
+  <script type="application/ld+json" set:html={JSON.stringify(svcSchema)} />
+
+  <!-- HERO: offer + quote form -->
+  <section class="sp-hero">
+    <div class="sp-hero-bg" style={`background-image:url(${s.img})`}></div>
+    <div class="container sp-hero-grid">
+      <div class="sp-hero-copy">
+        <nav class="crumbs" aria-label="Breadcrumb">
+          <a href="/">Home</a>/<a href="/services/">Services</a>/<a href={`/services/#${cat.slug}`}>{cat.title}</a>
+        </nav>
+        <span class="sp-kicker">{cat.title} · Dubai</span>
+        <h1>{s.title}{inDubai && <span class="text-lime">{inDubai}</span>} that brings real leads</h1>
+        <p class="sp-lead">{s.desc}</p>
+        <ul class="sp-ticks">
+          <li><Icon name="check" />Free consultation & strategy</li>
+          <li><Icon name="check" />Fixed, transparent quote</li>
+          <li><Icon name="check" />Reply on WhatsApp within 1 hour</li>
+          <li><Icon name="check" />Dedicated account manager</li>
+        </ul>
+        <div class="sp-ctas">
+          <Btn href="#quote">Get free proposal</Btn>
+          <a class="sp-call" href={site.phoneHref}><span><Icon name="phone" /></span><small>Call us now</small><b>{site.phone}</b></a>
+        </div>
+        <div class="sp-rating">
+          <div class="avatars">
+            <img src="/img/theme/t1-author-1.webp" alt="" /><img src="/img/theme/t1-author-2.webp" alt="" /><img src="/img/theme/t1-author-3.webp" alt="" /><img src="/img/theme/t1-author-4.webp" alt="" />
+          </div>
+          <div><span class="stars">★★★★★</span><small><b>4.9/5</b> from 150+ happy clients</small></div>
+        </div>
+      </div>
+      <div class="sp-form-wrap" id="quote">
+        <LeadForm service={s.title} title={`Get a free ${s.title} quote`} />
+      </div>
+    </div>
+  </section>
+
+  <ClientsBand />
+
+  <!-- STATS -->
+  <section class="sp-stats">
+    <div class="container sp-stats-grid">
+      <div><b data-count="300" data-suffix="+">300+</b><span>Projects delivered</span></div>
+      <div><b data-count="98" data-suffix="%">98%</b><span>Client retention</span></div>
+      <div><b>&lt;1 hr</b><span>Average reply time</span></div>
+      <div><b data-count="10" data-suffix="+">10+</b><span>Years in UAE market</span></div>
+    </div>
+  </section>
+
+  <!-- WHAT'S INCLUDED -->
+  <section class="section">
+    <div class="container sp-incl">
+      <div class="sp-incl-img clip-lr">
+        <img src={s.img} alt={`${s.title} Dubai`} loading="lazy" />
+        <div class="sp-badge"><b>{s.title}</b><span>Done-for-you by Limeflock</span></div>
+      </div>
+      <div>
+        <span class="label">What's included</span>
+        <h2 class="h-lg reveal-text">Everything you need for {lower} that performs</h2>
+        <p style="margin:20px 0 28px">Limeflock is a Dubai-based {cat.title} team. We handle strategy, creative and execution end-to-end - you approve, we deliver and report.</p>
+        <ul class="sp-feat">
+          {s.features.map((f, i) => <li class="rv"><em>{String(i + 1).padStart(2, '0')}</em>{f}</li>)}
+        </ul>
+        <Btn href="#quote" variant="dark">Get a tailored plan</Btn>
+      </div>
+    </div>
+  </section>
+
+  <!-- BENEFITS -->
+  <section class="section bg-dots" style="background-color:var(--bg-2)">
+    <div class="container">
+      <div class="sec-head">
+        <div>
+          <span class="label">Why Limeflock</span>
+          <h2 class="h-lg reveal-text">Why Dubai brands choose us for {lower}</h2>
+        </div>
+        <p>Strategy, creative and media under one roof - fewer hand-offs, faster launches and results you can see.</p>
+      </div>
+      <div class="sp-benefits">
+        {benefits.map((b) => (
+          <div class="sp-benefit rv">
+            <span class="ico"><Icon name={b.icon} /></span>
+            <h4>{b.t}</h4>
+            <p>{b.d}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <Steps />
+
+  <!-- PROOF -->
+  <section class="section">
+    <div class="container sp-proof">
+      <div class="sp-quote rv">
+        <span class="q">"</span>
+        <blockquote>{quote.quote}</blockquote>
+        <div class="sp-quote-who">
+          <img src={quote.img} alt="" loading="lazy" />
+          <div><b>{quote.name}</b><small>{quote.role}</small></div>
+          <span class="stars">★★★★★</span>
+        </div>
+      </div>
+      <div class="sp-works">
+        {proof.map((w) => (
+          <a href="/portfolio/" class="work-item rv">
+            <div class="work"><img src={w.img} alt={`${w.title} project`} loading="lazy" /><span class="view">View</span></div>
+            <h4 style="font-size:17px;margin-top:12px">{w.title}</h4>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ + specialist -->
+  <section class="section" style="background:var(--bg-2)">
+    <div class="container sp-faq">
+      <div>
+        <span class="label">FAQs</span>
+        <h2 class="h-lg reveal-text" style="margin-bottom:30px">{s.title} - your questions answered</h2>
+        {faqs.map((f, i) => (
+          <details class="faq" open={i === 0}>
+            <summary><em>{String(i + 1).padStart(2, '0')}</em>{f.q}<i>+</i></summary>
+            <div class="ans">{f.a}</div>
+          </details>
+        ))}
+      </div>
+      <aside class="sp-side">
+        <div class="side-box">
+          <h4>More {cat.title}</h4>
+          <ul>
+            {siblings.map((x) => (
+              <li><a href={`/${x.slug}/`} class:list={{ current: x.slug === s.slug }}>{x.title}<Icon name="arrow" /></a></li>
+            ))}
+          </ul>
+        </div>
+        <div class="side-cta">
+          <h4>Talk to a {lower} specialist</h4>
+          <p style="color:#222;margin:0">Free 15-minute call. No obligation.</p>
+          <a class="phone" href={site.phoneHref}>{site.phone}</a>
+          <Btn href={site.whatsapp}>WhatsApp us</Btn>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- RELATED -->
+  <section class="section">
+    <div class="container">
+      <div class="sec-head">
+        <div>
+          <span class="label">Related services</span>
+          <h2 class="h-lg reveal-text">Pair it for bigger results</h2>
+        </div>
+        <p>Most clients combine channels - one team, one plan, one report.</p>
+      </div>
+      <div class="svc-grid sp-related">
+        {related.map((r) => (
+          <a href={`/${r.slug}/`} class="svc-card rv">
+            <div class="thumb"><img src={r.img} alt={r.title} loading="lazy" /></div>
+            <div class="body"><h3>{r.title}</h3><p>{r.desc}</p><span class="more">Learn more <Icon name="arrow" /></span></div>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- mobile action bar -->
+  <div class="sp-bar">
+    <a href={site.phoneHref}><Icon name="phone" />Call</a>
+    <a href={site.whatsapp} target="_blank" rel="noopener"><Icon name="whatsapp" />WhatsApp</a>
+    <a href="#quote" class="hl">Free quote</a>
+  </div>
+</Layout>

@@ -1,0 +1,59 @@
+---
+import { testimonials } from '../data/site';
+// Avatars sit on a 900px circle around the quote (Nimo testimonial-1); GSAP turns the ring with scroll.
+const faces = ['t1-author-1', 't1-author-2', 't1-author-3', 't1-author-4', 't1-author-5', 't1-author-6', 't1-author-7', 't1-author-8', 't1-author-9', 't1-author-10', 't1-author-11', 't1-img-1', 't1-img-2', 't1-img-3'];
+const R = 450;
+const ring = faces.map((n, i) => {
+  const a = -Math.PI / 2 + (i / faces.length) * Math.PI * 2;
+  return { n, i, x: R + R * Math.cos(a), y: R + R * Math.sin(a), t: i % testimonials.length };
+});
+---
+<section class="section" style="background:var(--bg-2)">
+  <div class="container">
+    <div class="sec-head">
+      <div>
+        <span class="label">(06) Testimonials</span>
+        <h2 class="h-lg reveal-text">The best reviews from clients</h2>
+      </div>
+      <p>Don't just take our word for it - see what our clients say.</p>
+    </div>
+  </div>
+  <div class="testi" id="testi">
+    <div class="testi-ring">
+      {ring.map((r) => (
+        <button style={`left:${r.x}px;top:${r.y}px`} data-t={r.t} aria-label={`Show review from ${testimonials[r.t].name}`}>
+          <img src={`/img/theme/${r.n}.webp`} alt="" loading="lazy" />
+        </button>
+      ))}
+    </div>
+    <div class="testi-body container">
+      <span class="q">"</span>
+      <blockquote id="t-quote">{testimonials[0].quote}</blockquote>
+      <div class="stars">★★★★★</div>
+      <cite id="t-name">- {testimonials[0].name}, {testimonials[0].role}</cite>
+    </div>
+  </div>
+</section>
+<script define:vars={{ testimonials }}>
+  const root = document.getElementById('testi');
+  const body = root.querySelector('.testi-body');
+  const btns = [...root.querySelectorAll('.testi-ring button')];
+  const q = document.getElementById('t-quote');
+  const n = document.getElementById('t-name');
+  let cur = 0, timer;
+  const show = (i, btn) => {
+    cur = i;
+    btns.forEach((b) => b.classList.remove('active'));
+    (btn || btns.find((b) => +b.dataset.t === i))?.classList.add('active');
+    body.classList.add('swap');
+    setTimeout(() => {
+      const t = testimonials[i];
+      q.textContent = t.quote;
+      n.textContent = `- ${t.name}, ${t.role}`;
+      body.classList.remove('swap');
+    }, 350);
+  };
+  btns.forEach((b) => b.addEventListener('click', () => { show(+b.dataset.t, b); clearInterval(timer); }));
+  btns[0]?.classList.add('active');
+  timer = setInterval(() => show((cur + 1) % testimonials.length), 5000);
+</script>

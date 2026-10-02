@@ -1,0 +1,52 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import PageHero from '../../components/PageHero.astro';
+import Icon from '../../components/Icon.astro';
+import Btn from '../../components/Btn.astro';
+import ClientsBand from '../../components/ClientsBand.astro';
+import { categories, byCat, services } from '../../data/services';
+---
+<Layout title="Our Services | Limeflock Dubai" description={`Explore ${services.length} services from Limeflock: web design, SEO & AI search, Google & Meta Ads, AI automation, OOH, billboards, metro, media buying, branding and events in Dubai.`}>
+  <PageHero title="Our Services" crumbs={[{ label: 'Services' }]} sub={`${services.length} services across ${categories.length} specialist teams - digital, AI, outdoor and on-ground.`}>
+    <div class="cat-chips">
+      {categories.map((c) => <a href={`#${c.slug}`}>{c.title}</a>)}
+    </div>
+  </PageHero>
+
+  <section class="section" style="padding-top:60px">
+    <div class="container">
+      {categories.map((c, i) => (
+        <div class="cat-block" id={c.slug}>
+          <div class="cat-head">
+            <div>
+              <span class="label">({String(i + 1).padStart(2, '0')}) {c.bullets.join(' · ')}</span>
+              <h2 class="h-lg">{c.title}</h2>
+            </div>
+            <p style="margin:0">{c.desc}</p>
+          </div>
+          <div class="svc-grid">
+            {byCat(c.slug).map((s) => (
+              <a href={`/${s.slug}/`} class="svc-card rv">
+                <div class="thumb">
+                  <img src={s.img} alt={`${s.title} in Dubai`} loading="lazy" />
+                  {s.hot && <span class="tag">Popular</span>}
+                </div>
+                <div class="body">
+                  <h3>{s.title}</h3>
+                  <p>{s.desc}</p>
+                  <span class="more">Learn more <Icon name="arrow" /></span>
+                </div>
+              </a>
+            ))}
+          </div>
+        </div>
+      ))}
+
+      <div class="cta-band glow">
+        <h2>Not sure which service you need? Let's plan it together.</h2>
+        <Btn href="/contact/">Book a free call</Btn>
+      </div>
+    </div>
+  </section>
+  <ClientsBand />
+</Layout>

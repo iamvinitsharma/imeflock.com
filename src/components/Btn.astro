@@ -1,0 +1,11 @@
+---
+import Icon from './Icon.astro';
+interface Props { href: string; variant?: 'lime' | 'dark'; class?: string; type?: 'submit' }
+const { href, variant = 'lime', class: cls, type } = Astro.props;
+const text = await Astro.slots.render('default');
+const Tag = type ? 'button' : 'a';
+---
+<Tag href={type ? undefined : href} type={type} class:list={['btn', `btn-${variant}`, cls]}>
+  <span class="ic"><Icon name="arrow" /><Icon name="arrow" /></span>
+  <span class="txt"><span set:html={text} /><span aria-hidden="true" set:html={text} /></span>
+</Tag>
