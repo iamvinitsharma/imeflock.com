@@ -19,7 +19,7 @@ npm run build      # production build → dist/ (for limeflock.com root)
 | What | File |
 | --- | --- |
 | Contact details, socials, FAQs, testimonials | `src/data/site.ts` |
-| All 43 services (titles, URLs, copy, images) | `src/data/services.ts` |
+| All services (titles, URLs, copy, images) | `src/data/services.ts` |
 | Portfolio items | `src/data/portfolio.ts` |
 | Service landing page template | `src/pages/[slug].astro` |
 | Chat assistant (lead capture) | `src/components/ChatBot.astro` |

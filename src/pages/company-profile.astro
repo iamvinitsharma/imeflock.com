@@ -1,0 +1,229 @@
+---
+// Printable A4 company profile. Also exported to /public/limeflock-company-profile.pdf
+// (regenerate with: npm run dev, then node scripts/profile-pdf.mjs).
+import { site } from '../data/site';
+import { categories, byCat, services } from '../data/services';
+import { works } from '../data/portfolio';
+import { steps } from '../data/site';
+
+const year = new Date().getFullYear();
+const acts = services.find((s) => s.slug === 'event-promoters-dubai')!.acts!;
+const ooh = works.filter((w) => w.cat === 'ooh').slice(0, 4);
+const webs = works.filter((w) => w.cat === 'web').slice(0, 4);
+const logos = Array.from({ length: 16 }, (_, i) => i + 1).map((n) => {
+  const ext = [1, 2].includes(n) ? 'jpeg' : [5, 14, 15].includes(n) ? 'webp' : n === 12 ? 'svg' : 'png';
+  return { src: `/img/clients/client-${n}.${ext}`, dark: [4, 5, 6, 8, 11, 12, 13, 15].includes(n) };
+});
+const digital = ['whatsapp-business-api-dubai', 'google-ads-dubai', 'social-media-marketing-dubai', 'seo-services-dubai', 'cold-calling-services-dubai', 'appointment-setting-dubai']
+  .map((slug) => services.find((s) => s.slug === slug)!);
+---
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Limeflock Company Profile {year}</title>
+  <meta name="robots" content="noindex" />
+  <link rel="icon" href="/favicon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <!-- 1. COVER -->
+  <section class="pg cover">
+    <img class="cv-logo" src="/img/logo-light.webp" alt="Limeflock" />
+    <img class="cv-bird" src="/img/bird/bird.webp" alt="" />
+    <div class="cv-text">
+      <span class="kicker">Company Profile {year}</span>
+      <h1>Your Business<br /><span>Growth Partner</span></h1>
+      <p>Outdoor advertising · Events & live acts · Websites · Digital & direct marketing</p>
+    </div>
+    <div class="cv-foot"><span>{site.phone}</span><span>{site.email}</span><span>limeflock.com</span><span>Dubai, UAE</span></div>
+  </section>
+
+  <!-- 2. WHO WE ARE -->
+  <section class="pg">
+    <div class="pg-head"><span class="num">01</span><span class="kicker">Who we are</span></div>
+    <h2>One partner from the street<br />to the screen</h2>
+    <div class="cols">
+      <div>
+        <p class="lead">Limeflock is a Dubai-based advertising and marketing agency that helps businesses get seen, get leads and grow - online and offline.</p>
+        <p>We plan and book billboards, LED trucks, metro and taxi campaigns; run brand activations with promoters and live acts; build websites that convert; and manage Google, Meta, WhatsApp and direct marketing campaigns. One team, one plan and one clear report.</p>
+        <p>Based at {site.address.join(', ')}, we serve clients across the UAE and GCC, with digital projects delivered worldwide.</p>
+      </div>
+      <div class="mv">
+        <div><b>Our mission</b><p>Help businesses stand out on the street, at events and online, and turn that attention into measurable growth.</p></div>
+        <div><b>Our vision</b><p>To be the UAE's most trusted business growth partner, where outdoor media, events and digital work as one.</p></div>
+        <div><b>Our promise</b><p>Clear proposals, fixed transparent pricing, fast replies and reporting in plain language.</p></div>
+      </div>
+    </div>
+    <div class="stats">
+      <div><b>300+</b><span>Projects delivered</span></div>
+      <div><b>150+</b><span>Happy clients</span></div>
+      <div><b>{services.length}</b><span>Services</span></div>
+      <div><b>10+</b><span>Years of experience</span></div>
+    </div>
+  </section>
+
+  <!-- 3. WHAT WE DO -->
+  <section class="pg">
+    <div class="pg-head"><span class="num">02</span><span class="kicker">What we do</span></div>
+    <h2>{services.length} services, {categories.length} specialist teams</h2>
+    <div class="svc">
+      {categories.map((c) => (
+        <div class="svc-c">
+          <h3>{c.title}</h3>
+          <p>{c.desc}</p>
+          <ul>{byCat(c.slug).map((s) => <li>{s.title}</li>)}</ul>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <!-- 4. OUTDOOR & EVENTS -->
+  <section class="pg">
+    <div class="pg-head"><span class="num">03</span><span class="kicker">Outdoor, events & live acts</span></div>
+    <h2>Seen across Dubai</h2>
+    <p class="intro">Billboards, LED screens, mobile LED and glass trucks, metro, taxis, buses and malls - planned, approved, designed, printed and installed by our team.</p>
+    <div class="gal4">
+      {ooh.map((w) => <figure><img src={w.img} alt="" /><figcaption>{w.title}</figcaption></figure>)}
+    </div>
+    <h3 class="sub">Live acts & artists for your events</h3>
+    <div class="acts">
+      {acts.map((a) => <figure><img src={a.img} alt="" /><figcaption>{a.name}</figcaption></figure>)}
+    </div>
+  </section>
+
+  <!-- 5. DIGITAL -->
+  <section class="pg">
+    <div class="pg-head"><span class="num">04</span><span class="kicker">Websites & digital</span></div>
+    <h2>Websites and campaigns that bring leads</h2>
+    <div class="gal4 web">
+      {webs.map((w) => <figure><img src={w.img} alt="" /><figcaption>{w.title}</figcaption></figure>)}
+    </div>
+    <div class="dig">
+      {digital.map((s) => <div><b>{s.title}</b><p>{s.desc}</p></div>)}
+    </div>
+  </section>
+
+  <!-- 6. WHY US + CLIENTS -->
+  <section class="pg">
+    <div class="pg-head"><span class="num">05</span><span class="kicker">Why Limeflock</span></div>
+    <h2>How we work</h2>
+    <div class="steps">
+      {steps.map((s) => <div><span>{s.n}</span><b>{s.title}</b><small>{s.time}</small><p>{s.text}</p></div>)}
+    </div>
+    <div class="why">
+      <div><b>One team, every channel</b><p>Outdoor, events, web and digital under one roof - fewer hand-offs.</p></div>
+      <div><b>Fast launch</b><p>Approvals, design and printing handled; most campaigns live in days.</p></div>
+      <div><b>Transparent pricing</b><p>Fixed, itemised quotes. No hidden fees or long lock-ins.</p></div>
+      <div><b>Bilingual creative</b><p>English and Arabic copy, design and video in-house.</p></div>
+    </div>
+    <h3 class="sub">Clients who trust us</h3>
+    <div class="logos">{logos.map((l) => <div class:list={{ dark: l.dark }}><img src={l.src} alt="" /></div>)}</div>
+  </section>
+
+  <!-- 7. CONTACT -->
+  <section class="pg back">
+    <img class="cv-bird small" src="/img/bird/bird.webp" alt="" />
+    <span class="kicker">Let's grow together</span>
+    <h2>Ready to take <span>flight?</span></h2>
+    <p class="intro">Tell us where you want your brand to go. We reply within the hour with a clear plan and a fixed quote.</p>
+    <div class="contact">
+      <div><small>Call / WhatsApp</small><b>{site.phone}</b></div>
+      <div><small>Email</small><b>{site.email}</b></div>
+      <div><small>Website</small><b>limeflock.com</b></div>
+      <div><small>Office</small><b>{site.address.join(', ')} · {site.poBox}</b></div>
+      <div><small>Social</small><b>@limeflock on Instagram, Facebook, LinkedIn & X</b></div>
+    </div>
+    <img class="back-logo" src="/img/logo-light.webp" alt="Limeflock" />
+  </section>
+</body>
+</html>
+
+<style is:global>
+  @page { size: A4; margin: 0; }
+  :root { --lime: #d6f345; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: #2a2a2a; }
+  body { font-family: 'Inter', sans-serif; color: #c9c9c9; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  h1, h2, h3, b { font-family: 'Space Grotesk', sans-serif; color: #fff; margin: 0; letter-spacing: -.02em; }
+  p { margin: 0 0 10px; line-height: 1.55; font-size: 11.5pt; }
+  .pg { position: relative; width: 210mm; height: 297mm; margin: 0 auto 10mm; padding: 18mm 16mm; overflow: hidden; page-break-after: always; break-after: page;
+    background: radial-gradient(circle at 100% 0%, rgba(214,243,69,.13), transparent 40%), radial-gradient(circle at 0% 100%, rgba(214,243,69,.07), transparent 40%), #0b0b0b; }
+  .pg:last-child { page-break-after: auto; break-after: auto; }
+  @media print { html, body { background: #0b0b0b; } .pg { margin: 0; } }
+  .kicker { display: inline-block; color: var(--lime); font-family: 'Space Grotesk'; font-weight: 600; font-size: 10pt; letter-spacing: .14em; text-transform: uppercase; }
+  .pg-head { display: flex; align-items: center; gap: 12px; margin-bottom: 6mm; }
+  .pg-head .num { width: 30px; height: 30px; border-radius: 50%; background: var(--lime); color: #000; display: grid; place-items: center; font-family: 'Space Grotesk'; font-weight: 700; font-size: 10pt; }
+  h2 { font-size: 26pt; line-height: 1.08; margin-bottom: 6mm; }
+  h2 span, h1 span { color: var(--lime); }
+  .intro { font-size: 12pt; max-width: 150mm; margin-bottom: 7mm; }
+  .lead { font-size: 13.5pt; color: #fff; }
+  .sub { font-size: 15pt; margin: 8mm 0 4mm; }
+
+  .cover { display: flex; flex-direction: column; padding: 16mm; }
+  .cv-logo { width: 62mm; }
+  .cv-bird { position: absolute; right: -18mm; top: 52mm; width: 150mm; filter: drop-shadow(0 20px 40px rgba(0,0,0,.6)); }
+  .cv-text { margin-top: auto; margin-bottom: 22mm; position: relative; }
+  .cv-text h1 { font-size: 46pt; line-height: 1.02; margin: 5mm 0 6mm; }
+  .cv-text p { font-size: 12pt; color: #e3e3e3; max-width: 130mm; }
+  .cv-foot { display: flex; justify-content: space-between; gap: 8px; border-top: 1px solid #2a2a2a; padding-top: 6mm; font-size: 10pt; color: #fff; }
+
+  .cols { display: grid; grid-template-columns: 1.15fr 1fr; gap: 10mm; }
+  .mv { display: grid; gap: 4mm; }
+  .mv > div { padding: 5mm; border-radius: 14px; background: #161616; border: 1px solid #262626; }
+  .mv b { display: block; color: var(--lime); font-size: 12pt; margin-bottom: 2mm; }
+  .mv p { font-size: 10.5pt; margin: 0; }
+  .stats { position: absolute; left: 16mm; right: 16mm; bottom: 18mm; display: grid; grid-template-columns: repeat(4, 1fr); gap: 4mm; }
+  .stats > div { padding: 7mm 4mm; border-radius: 14px; text-align: center; background: linear-gradient(160deg, #1d230a, #121212); border: 1px solid rgba(214,243,69,.25); }
+  .stats b { display: block; font-size: 26pt; color: var(--lime); }
+  .stats span { font-size: 9.5pt; }
+
+  .svc { display: grid; grid-template-columns: 1fr 1fr; gap: 3.5mm; }
+  .svc-c { padding: 4mm 4.5mm; border-radius: 14px; background: #151515; border: 1px solid #252525; }
+  .svc-c h3 { font-size: 13pt; color: var(--lime); margin-bottom: 1.5mm; }
+  .svc-c p { font-size: 9pt; margin-bottom: 2.5mm; color: #a9a9a9; }
+  .svc-c ul { margin: 0; padding: 0; list-style: none; display: flex; flex-wrap: wrap; gap: 1.6mm; }
+  .svc-c li { font-size: 8.3pt; color: #eee; padding: 1mm 2.6mm; border-radius: 20px; background: #222; }
+
+  figure { margin: 0; position: relative; border-radius: 12px; overflow: hidden; background: #151515; }
+  figure img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  figcaption { position: absolute; left: 0; right: 0; bottom: 0; padding: 6mm 4mm 3mm; background: linear-gradient(transparent, rgba(0,0,0,.85)); color: #fff; font-family: 'Space Grotesk'; font-weight: 600; font-size: 10pt; text-shadow: 0 1px 3px #000, 0 0 8px rgba(0,0,0,.9); }
+  .gal4 { display: grid; grid-template-columns: 1fr 1fr; gap: 4mm; }
+  .gal4 figure { height: 52mm; }
+  .gal4.web figure { height: 42mm; }
+  .gal4.web figure img { object-position: top; }
+  .acts { display: grid; grid-template-columns: repeat(5, 1fr); gap: 3mm; }
+  .acts figure { height: 78mm; }
+  .acts figcaption { font-size: 9pt; }
+  .dig { display: grid; grid-template-columns: 1fr 1fr; gap: 3.5mm; margin-top: 6mm; }
+  .dig > div { padding: 4mm 4.5mm; border-radius: 14px; background: #151515; border: 1px solid #252525; }
+  .dig b { display: block; font-size: 12pt; color: var(--lime); margin-bottom: 1.5mm; }
+  .dig p { font-size: 9.5pt; margin: 0; }
+
+  .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4mm; }
+  .steps > div { padding: 5mm; border-radius: 14px; background: #151515; border: 1px solid #252525; }
+  .steps span { font-family: 'Space Grotesk'; font-weight: 700; color: var(--lime); font-size: 18pt; }
+  .steps b { display: block; font-size: 12.5pt; margin: 1mm 0; }
+  .steps small { color: #888; font-size: 9pt; }
+  .steps p { font-size: 9.5pt; margin: 2mm 0 0; }
+  .why { display: grid; grid-template-columns: 1fr 1fr; gap: 4mm; margin-top: 5mm; }
+  .why > div { padding: 4mm 5mm; border-left: 3px solid var(--lime); background: #131313; border-radius: 0 12px 12px 0; }
+  .why b { font-size: 11.5pt; }
+  .why p { font-size: 9.5pt; margin: 1mm 0 0; }
+  .logos { display: grid; grid-template-columns: repeat(8, 1fr); gap: 2.5mm; }
+  .logos > div { height: 17mm; border-radius: 8px; background: #fff; display: grid; place-items: center; padding: 2mm; }
+  .logos > div.dark { background: #1a1a1a; }
+  .logos img { max-width: 100%; max-height: 13mm; object-fit: contain; }
+
+  .back { display: flex; flex-direction: column; justify-content: center; }
+  .back h2 { font-size: 40pt; }
+  .cv-bird.small { position: absolute; right: 14mm; top: 20mm; width: 70mm; }
+  .contact { display: grid; gap: 4mm; margin-top: 4mm; max-width: 150mm; }
+  .contact > div { padding: 4.5mm 6mm; border-radius: 14px; background: #151515; border: 1px solid #262626; }
+  .contact small { display: block; color: #8a8a8a; font-size: 9pt; margin-bottom: 1mm; }
+  .contact b { font-size: 13pt; }
+  .back-logo { position: absolute; left: 16mm; bottom: 18mm; width: 58mm; }
+</style>

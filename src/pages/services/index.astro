@@ -7,7 +7,7 @@ import ClientsBand from '../../components/ClientsBand.astro';
 import { categories, byCat, services } from '../../data/services';
 ---
 <Layout title="Our Services | Limeflock Dubai" description={`Explore ${services.length} services from Limeflock: web design, SEO & AI search, Google & Meta Ads, AI automation, OOH, billboards, metro, media buying, branding and events in Dubai.`}>
-  <PageHero title="Our Services" crumbs={[{ label: 'Services' }]} sub={`${services.length} services across ${categories.length} specialist teams - digital, AI, outdoor and on-ground.`}>
+  <PageHero title="Our Services" crumbs={[{ label: 'Services' }]} sub={`${services.length} services across ${categories.length} specialist teams - outdoor, on-ground and digital.`}>
     <div class="cat-chips">
       {categories.map((c) => <a href={`#${c.slug}`}>{c.title}</a>)}
     </div>

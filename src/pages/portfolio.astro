@@ -1,20 +1,124 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import PageHero from '../components/PageHero.astro';
-import PortfolioGrid from '../components/PortfolioGrid.astro';
-import ClientsBand from '../components/ClientsBand.astro';
 import Btn from '../components/Btn.astro';
+import Icon from '../components/Icon.astro';
+import { works, workCats } from '../data/portfolio';
+
+const logos = Array.from({ length: 16 }, (_, i) => i + 1).map((n) => {
+  const ext = [1, 2].includes(n) ? 'jpeg' : [5, 14, 15].includes(n) ? 'webp' : n === 12 ? 'svg' : 'png';
+  return { src: `/img/clients/client-${n}.${ext}`, dark: [4, 5, 6, 8, 11, 12, 13, 15].includes(n) };
+});
+const count = (c: string) => works.filter((w) => w.cat === c).length;
 ---
-<Layout title="Portfolio | Limeflock Dubai" description="Websites, brands and campaigns built by Limeflock for clients in the UAE and worldwide.">
-  <PageHero title="Our Portfolio" crumbs={[{ label: 'Portfolio' }]} />
-  <PortfolioGrid head={false} />
-  <ClientsBand />
+<Layout title="Portfolio & Company Profile | Limeflock Dubai" description="Limeflock portfolio: billboard and LED truck campaigns, events and live acts, websites, digital campaigns and branding in Dubai. Download our company profile.">
+  <PageHero title="Portfolio & Company Profile" crumbs={[{ label: 'Portfolio' }]} sub="Outdoor campaigns, events and live acts, websites and digital marketing - one team behind it all.">
+    <div class="pf-hero-ctas">
+      <a class="btn btn-lime" href="/limeflock-company-profile.pdf" download>
+        <span class="ic"><Icon name="arrow" /><Icon name="arrow" /></span>
+        <span class="txt"><span>Download company profile (PDF)</span><span aria-hidden="true">Download company profile (PDF)</span></span>
+      </a>
+      <a class="pf-view" href="/company-profile/" target="_blank" rel="noopener">View online <Icon name="arrow" /></a>
+    </div>
+  </PageHero>
+
+  <section class="section" style="padding-top:50px">
+    <div class="container">
+      <div class="pf-filters" role="tablist" aria-label="Filter portfolio">
+        <button class="active" data-f="all" role="tab">All work <small>{works.length}</small></button>
+        {workCats.map((c) => <button data-f={c.slug} role="tab">{c.title} <small>{count(c.slug)}</small></button>)}
+      </div>
+      <div class="pf-grid" id="pf-grid">
+        {works.map((w) => (
+          <a href={w.href ?? '#'} class="pf-item" data-cat={w.cat} onclick={w.href ? undefined : 'return false'}>
+            <div class="pf-thumb">
+              <img src={w.img} alt={w.title} loading="lazy" />
+              <span class="view">View</span>
+            </div>
+            <div class="pf-meta">
+              <span class="pf-cat">{workCats.find((c) => c.slug === w.cat)!.title}</span>
+              <h3>{w.title}</h3>
+              <div class="pf-tags">{w.tags.map((t) => <span>{t}</span>)}</div>
+            </div>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section" style="background:var(--bg-2)">
+    <div class="container">
+      <div class="sec-head">
+        <div>
+          <span class="label">Our clients</span>
+          <h2 class="h-lg reveal-text">Brands that trust the flock</h2>
+        </div>
+        <p>From hospitals and immigration firms to cinemas, contractors and beauty brands - in the UAE, UK, Canada and India.</p>
+      </div>
+      <div class="pf-logos">
+        {logos.map((l) => <div class:list={['client-logo', { dark: l.dark }]}><img src={l.src} alt="Client logo" loading="lazy" /></div>)}
+      </div>
+    </div>
+  </section>
+
   <section class="section">
     <div class="container">
       <div class="cta-band glow">
-        <h2>Your brand could be next. Let's build something people remember.</h2>
-        <Btn href="/contact/">Start a project</Btn>
+        <h2>Need our company profile for your team? Download it or ask for a tailored proposal.</h2>
+        <div style="display:flex;gap:14px;flex-wrap:wrap">
+          <Btn href="/limeflock-company-profile.pdf">Download profile</Btn>
+          <Btn href="/contact/" variant="dark">Get a proposal</Btn>
+        </div>
       </div>
     </div>
   </section>
 </Layout>
+
+<script>
+  const grid = document.getElementById('pf-grid')!;
+  document.querySelectorAll<HTMLButtonElement>('.pf-filters button').forEach((b) =>
+    b.addEventListener('click', () => {
+      document.querySelectorAll('.pf-filters button').forEach((x) => x.classList.toggle('active', x === b));
+      const f = b.dataset.f;
+      grid.querySelectorAll<HTMLElement>('.pf-item').forEach((it) => {
+        const show = f === 'all' || it.dataset.cat === f;
+        it.classList.toggle('hide', !show);
+      });
+    })
+  );
+</script>
+
+<style is:global>
+  .pf-hero-ctas { display: flex; gap: 22px; justify-content: center; align-items: center; flex-wrap: wrap; margin-top: 28px; }
+  .pf-view { display: inline-flex; align-items: center; gap: 8px; color: #fff; font-family: var(--font-head); font-weight: 600; }
+  .pf-view svg { width: 15px; height: 15px; color: var(--lime); }
+  .pf-view:hover { color: var(--lime); }
+  .pf-filters { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-bottom: 40px; }
+  .pf-filters button { border: 1px solid #2a2a2a; background: #141414; color: #ddd; padding: 11px 18px; border-radius: 100px; font-family: var(--font-head); font-weight: 600; font-size: 14.5px; cursor: pointer; transition: .3s; }
+  .pf-filters button small { margin-left: 6px; color: #777; font-weight: 500; }
+  .pf-filters button:hover { border-color: var(--lime); color: #fff; }
+  .pf-filters button.active { background: var(--lime); border-color: var(--lime); color: #000; }
+  .pf-filters button.active small { color: #333; }
+  .pf-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 26px; }
+  .pf-item { display: block; transition: opacity .4s, transform .5s var(--ease); }
+  .pf-item.hide { display: none; }
+  .pf-thumb { position: relative; border-radius: 20px; overflow: hidden; aspect-ratio: 4/3; background: #141414; }
+  .pf-thumb img { width: 100%; height: 100%; object-fit: cover; object-position: top; transition: transform 1s var(--ease); }
+  .pf-item[data-cat]:not([data-cat="web"]) .pf-thumb img { object-position: center; }
+  .pf-thumb::after { content: ""; position: absolute; inset: 0; background: #000; opacity: 0; transition: opacity .5s var(--ease); }
+  .pf-item:hover .pf-thumb img { transform: scale(1.06); }
+  .pf-item:hover .pf-thumb::after { opacity: .4; }
+  .pf-thumb .view { position: absolute; left: 50%; top: 50%; z-index: 2; width: 96px; height: 96px; border-radius: 50%; background: var(--lime); color: #000; display: grid; place-items: center; font-family: var(--font-head); font-weight: 600; transform: translate(-50%, -50%) scale(0); transition: transform .5s var(--ease); }
+  .pf-item:hover .view { transform: translate(-50%, -50%) scale(1); }
+  .pf-meta { padding: 16px 4px 0; }
+  .pf-cat { font-size: 12.5px; color: var(--lime); font-family: var(--font-head); font-weight: 600; letter-spacing: .04em; text-transform: uppercase; }
+  .pf-meta h3 { font-size: 20px; margin: 6px 0 10px; transition: color .3s; }
+  .pf-item:hover h3 { color: var(--lime); }
+  .pf-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+  .pf-tags span { font-size: 12px; padding: 4px 10px; border-radius: 100px; background: #1b1b1b; border: 1px solid #262626; }
+  .pf-logos { display: grid; grid-template-columns: repeat(8, 1fr); gap: 14px; }
+  .pf-logos .client-logo { width: auto; height: 84px; }
+  @media (max-width: 1100px) { .pf-logos { grid-template-columns: repeat(4, 1fr); } }
+  @media (max-width: 991px) { .pf-grid { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 640px) { .pf-grid { grid-template-columns: 1fr; } .pf-logos { grid-template-columns: repeat(2, 1fr); } }
+</style>

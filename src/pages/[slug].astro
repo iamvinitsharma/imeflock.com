@@ -20,7 +20,10 @@ const lower = s.title; // keep acronyms (AI, SEO, OOH…) and brand names intact
 const inDubai = /dubai/i.test(s.title) ? '' : ' in Dubai';
 const idx = services.indexOf(s);
 const quote = testimonials[idx % testimonials.length];
-const proof = [works[idx % works.length], works[(idx + 3) % works.length]];
+// proof: work from the matching portfolio category
+const workCat = ({ ooh: 'ooh', media: 'ooh', events: 'events', branding: 'branding', direct: 'digital', performance: 'digital' } as Record<string, string>)[s.cat] ?? 'web';
+const pool = works.filter((w) => w.cat === workCat);
+const proof = [pool[idx % pool.length], pool[(idx + 1) % pool.length]];
 const isOOH = s.cat === 'ooh' || s.cat === 'events' || s.cat === 'media';
 
 const benefits = [
@@ -111,6 +114,58 @@ const svcSchema = { '@context': 'https://schema.org', '@type': 'Service', name: 
     </div>
   </section>
 
+  <!-- LIVE ACTS (event promoters) -->
+  {s.acts && (
+    <section class="section sp-acts-sec">
+      <div class="container">
+        <div class="sec-head">
+          <div>
+            <span class="label">Live acts & artists</span>
+            <h2 class="h-lg reveal-text">Show-stopping performers for your event</h2>
+          </div>
+          <p>Book a single act or combine several for launches, gala dinners, weddings, festivals and brand activations across the UAE.</p>
+        </div>
+        <div class="sp-acts">
+          {s.acts.map((a, i) => (
+            <article class="sp-act rv">
+              <img src={a.img} alt={`${a.name} in Dubai`} loading="lazy" />
+              <div class="sp-act-body">
+                <em>{String(i + 1).padStart(2, '0')}</em>
+                <h3>{a.name}</h3>
+                <p>{a.desc}</p>
+                <a href="#quote" class="sp-act-cta" data-act={a.name}>Check availability <Icon name="arrow" /></a>
+              </div>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <!-- USE CASES (e.g. WhatsApp API) -->
+  {s.uses && (
+    <section class="section">
+      <div class="container">
+        <div class="sec-head">
+          <div>
+            <span class="label">How it helps your business</span>
+            <h2 class="h-lg reveal-text">What {s.title} does for you</h2>
+          </div>
+          <p>Real ways Dubai businesses use it to reply faster, sell more and keep every customer conversation in one place.</p>
+        </div>
+        <div class="sp-uses">
+          {s.uses.map((u, i) => (
+            <div class="sp-use rv">
+              <span class="n">{String(i + 1).padStart(2, '0')}</span>
+              <h4>{u.t}</h4>
+              <p>{u.d}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
   <!-- BENEFITS -->
   <section class="section bg-dots" style="background-color:var(--bg-2)">
     <div class="container">
@@ -149,7 +204,7 @@ const svcSchema = { '@context': 'https://schema.org', '@type': 'Service', name: 
       </div>
       <div class="sp-works">
         {proof.map((w) => (
-          <a href="/portfolio/" class="work-item rv">
+          <a href={w.href ?? "/portfolio/"} class="work-item rv">
             <div class="work"><img src={w.img} alt={`${w.title} project`} loading="lazy" /><span class="view">View</span></div>
             <h4 style="font-size:17px;margin-top:12px">{w.title}</h4>
           </a>
@@ -218,3 +273,13 @@ const svcSchema = { '@context': 'https://schema.org', '@type': 'Service', name: 
     <a href="#quote" class="hl">Free quote</a>
   </div>
 </Layout>
+<script>
+  // "Check availability" on an act pre-fills the quote form with that act
+  document.querySelectorAll<HTMLAnchorElement>('[data-act]').forEach((a) =>
+    a.addEventListener('click', () => {
+      const msg = document.querySelector<HTMLTextAreaElement>('#quote textarea[name="message"]');
+      if (msg) msg.value = `I'd like to check availability for: ${a.dataset.act}
+Event date & location: `;
+    })
+  );
+</script>

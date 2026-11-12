@@ -7,6 +7,7 @@ import Facts from '../components/Facts.astro';
 import Testimonials from '../components/Testimonials.astro';
 import ClientsBand from '../components/ClientsBand.astro';
 import Connect from '../components/Connect.astro';
+import Icon from '../components/Icon.astro';
 
 const values = [
   { t: 'Creativity with Purpose', d: 'We blend bold ideas with smart strategy to create work that performs. Every design and campaign is driven by results, not just aesthetics.', img: '/img/theme/s1-img-2.webp' },
@@ -15,8 +16,10 @@ const values = [
   { t: 'Integrity & Transparency', d: 'We build trust through honest work and measurable outcomes. No fluff, no shortcuts - just real results you can count on.', img: '/img/theme/s1-img-7.webp' },
 ];
 ---
-<Layout title="About Us | Limeflock Dubai" description="Limeflock is a Dubai advertising and digital marketing agency in Abu Hail, combining web, SEO, AI, paid media and outdoor advertising.">
-  <PageHero title="About Limeflock" crumbs={[{ label: 'About Us' }]} sub="Your Digital Growth Partner - a Dubai agency where websites, digital ads and outdoor media work together." />
+<Layout title="About Us | Limeflock Dubai" description="Limeflock is a Dubai advertising and digital marketing agency in Abu Hail, combining outdoor advertising, events, websites, SEO and paid media.">
+  <PageHero title="About Limeflock" crumbs={[{ label: 'About Us' }]} sub="Your Business Growth Partner - a Dubai agency where outdoor media, events, websites and digital ads work together.">
+    <div style="margin-top:26px"><a class="f-profile" href="/limeflock-company-profile.pdf" download><Icon name="arrow" /> Download company profile (PDF)</a></div>
+  </PageHero>
   <AboutSection />
   <ClientsBand />
   <section class="section">

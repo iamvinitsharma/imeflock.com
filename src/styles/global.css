@@ -697,3 +697,7 @@ html.menu-open, html.menu-open body { overflow: hidden; }
 }
 
 @media (max-width: 640px) { .step .card h4 { padding-right: 76px; } }
+
+.f-profile { display: inline-flex; align-items: center; gap: 8px; margin-top: 16px; padding: 10px 16px; border-radius: 100px; border: 1px solid rgba(214,243,69,.45); color: var(--lime); font-family: var(--font-head); font-weight: 600; font-size: 14px; }
+.f-profile svg { width: 14px; height: 14px; transform: rotate(90deg); }
+.f-profile:hover { background: var(--lime); color: #000; }

@@ -113,3 +113,37 @@
   body:has(.sp-bar) .wa-float, body:has(.sp-bar) .to-top { bottom: 84px; }
   body:has(.sp-bar) .footer { padding-bottom: 70px; }
 }
+
+/* live acts gallery (Event Promoters & Artists) */
+.sp-acts { display: grid; grid-template-columns: repeat(6, 1fr); gap: 22px; }
+.sp-act { grid-column: span 2; position: relative; border-radius: 22px; overflow: hidden; min-height: 420px; display: flex; align-items: flex-end; background: #111; isolation: isolate; }
+.sp-act:nth-child(4), .sp-act:nth-child(5) { grid-column: span 3; }
+.sp-act img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: -2; transition: transform 1s var(--ease); }
+.sp-act::after { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(180deg, rgba(0,0,0,0) 30%, rgba(0,0,0,.88) 100%); }
+.sp-act:hover img { transform: scale(1.07); }
+.sp-act-body { padding: 26px; }
+.sp-act-body em { font-style: normal; font-family: var(--font-head); color: var(--lime); font-weight: 700; font-size: 14px; }
+.sp-act-body h3 { font-size: 26px; margin: 6px 0 8px; }
+.sp-act-body p { color: #d2d2d2; font-size: 14.5px; margin: 0 0 16px; }
+.sp-act-cta { display: inline-flex; align-items: center; gap: 8px; padding: 9px 16px; border-radius: 100px; background: rgba(214,243,69,.12); border: 1px solid rgba(214,243,69,.45); color: var(--lime); font-family: var(--font-head); font-weight: 600; font-size: 14px; transition: background .3s, color .3s; }
+.sp-act-cta svg { width: 14px; height: 14px; }
+.sp-act-cta:hover { background: var(--lime); color: #000; }
+
+/* use cases (e.g. WhatsApp Business API) */
+.sp-uses { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+.sp-use { padding: 30px 26px; border-radius: 20px; background: linear-gradient(160deg, #1b200a, #111 55%); border: 1px solid rgba(214,243,69,.18); transition: border-color .3s, transform .4s var(--ease); }
+.sp-use:hover { border-color: var(--lime); transform: translateY(-6px); }
+.sp-use .n { display: inline-grid; place-items: center; width: 42px; height: 42px; border-radius: 12px; background: var(--lime); color: #000; font-family: var(--font-head); font-weight: 700; margin-bottom: 18px; }
+.sp-use h4 { font-size: 20px; margin-bottom: 10px; }
+.sp-use p { margin: 0; font-size: 15px; }
+
+@media (max-width: 991px) {
+  .sp-acts { grid-template-columns: 1fr 1fr; }
+  .sp-act, .sp-act:nth-child(4), .sp-act:nth-child(5) { grid-column: span 1; min-height: 360px; }
+  .sp-act:last-child { grid-column: span 2; }
+  .sp-uses { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 640px) {
+  .sp-acts, .sp-uses { grid-template-columns: 1fr; }
+  .sp-act, .sp-act:last-child { grid-column: auto; min-height: 340px; }
+}

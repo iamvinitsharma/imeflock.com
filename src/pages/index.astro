@@ -15,11 +15,11 @@ import Connect from '../components/Connect.astro';
 import FlightPath from '../components/FlightPath.astro';
 import Bird from '../components/Bird.astro';
 import { site } from '../data/site';
-import { services } from '../data/services';
-const hot = services.filter((s) => s.hot).slice(0, 3);
+import { services, featured } from '../data/services';
+const hot = [featured[0], featured[1], featured[2]];
 const ringIcons = ['whatsapp', 'x', 'linkedin', 'instagram', 'facebook'];
 ---
-<Layout title="Limeflock | Digital Growth Partner - Advertising & Marketing Agency in Dubai">
+<Layout title="Limeflock | Business Growth Partner - Advertising & Marketing Agency in Dubai">
   <section class="hero">
     <div class="hero-bg"></div>
     <div class="hero-flock" id="hero-flock">
@@ -29,7 +29,7 @@ const ringIcons = ['whatsapp', 'x', 'linkedin', 'instagram', 'facebook'];
     <div class="container">
       <h1 class="hero-title">
         <span class="l1 split-hero">Limeflock</span>
-        <span class="award">{'{ Your Digital Growth Partner }'}</span>
+        <span class="award">{'{ Your Business Growth Partner }'}</span>
         <span class="l2 split-hero">Growth Agency</span>
       </h1>
       <div class="hero-bottom">
@@ -60,7 +60,7 @@ const ringIcons = ['whatsapp', 'x', 'linkedin', 'instagram', 'facebook'];
   <FlightPath />
   <WhyChoose />
   <Facts />
-  <PortfolioGrid limit={4} fly />
+  <PortfolioGrid fly />
   <Testimonials />
   <Steps />
   <ContactFaq />

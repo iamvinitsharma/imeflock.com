@@ -1,6 +1,6 @@
 export const site = {
   name: 'Limeflock',
-  tagline: 'Digital Growth Partner',
+  tagline: 'Business Growth Partner',
   url: 'https://limeflock.com',
   phone: '+971 54 191 6252',
   phoneHref: 'tel:+971541916252',

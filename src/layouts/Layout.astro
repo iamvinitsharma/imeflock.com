@@ -7,7 +7,7 @@ import BirdLayer from '../components/BirdLayer.astro';
 import ChatBot from '../components/ChatBot.astro';
 import { site } from '../data/site';
 interface Props { title: string; description?: string; image?: string }
-const { title, description = 'Limeflock is a Dubai advertising & digital marketing agency: web design, SEO, Google & Meta Ads, AI automation, billboards, metro, taxi and LED truck advertising.', image = '/img/theme/h1-bg-img-1.webp' } = Astro.props;
+const { title, description = 'Limeflock is a Dubai advertising & digital marketing agency: billboards, LED trucks, metro and taxi ads, events and live acts, web design, SEO, Google & Meta Ads and WhatsApp Business API.', image = '/img/theme/h1-bg-img-1.webp' } = Astro.props;
 const canonical = new URL(Astro.url.pathname, site.url).href;
 const schema = {
   '@context': 'https://schema.org',

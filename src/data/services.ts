@@ -7,6 +7,10 @@ export type Service = {
   hot?: boolean;
   desc: string;
   features: string[];
+  /** extra "how it works for you" use cases shown on the service page */
+  uses?: { t: string; d: string }[];
+  /** performers / acts shown as a gallery on the service page */
+  acts?: { name: string; desc: string; img: string }[];
 };
 
 export type Category = {
@@ -21,19 +25,18 @@ export type Category = {
 const s = (n: string) => `/img/stock/${n}.webp`;
 
 export const categories: Category[] = [
-  { slug: 'web', title: 'Web Design & Development', icon: 'code', img: s('web-design'), desc: 'Fast, beautiful websites and online stores engineered to turn visitors into enquiries and sales.', bullets: ['Website design', 'Custom development', 'Ecommerce', 'WordPress'] },
-  { slug: 'seo', title: 'SEO & AI Search', icon: 'search', img: s('seo'), desc: 'Rank on Google and get cited by ChatGPT, Gemini and AI Overviews when customers search in Dubai.', bullets: ['Local SEO', 'AEO & GEO', 'ChatGPT SEO', 'Technical SEO'] },
-  { slug: 'performance', title: 'Digital & Performance Marketing', icon: 'chart', img: s('analytics'), desc: 'Paid campaigns on Google, Meta and social that are measured on leads and revenue - not likes.', bullets: ['Google Ads', 'Meta Ads', 'Social media', 'Lead generation'] },
-  { slug: 'ai', title: 'AI & Automation', icon: 'bot', img: s('ai'), desc: 'AI chatbots, WhatsApp automation and smart workflows that answer, qualify and follow up 24/7.', bullets: ['AI chatbots', 'WhatsApp API', 'CRM automation', 'AI marketing'] },
   { slug: 'ooh', title: 'OOH Advertising', icon: 'billboard', img: s('led-billboard'), desc: 'Billboards, LED screens, metro, taxis, buses and mobile trucks across Dubai and the UAE.', bullets: ['Billboards & LED', 'Metro & taxi', 'Mobile LED trucks', 'Mall media'] },
+  { slug: 'web', title: 'Web Design & Development', icon: 'code', img: s('web-design'), desc: 'Fast, beautiful websites and online stores engineered to turn visitors into enquiries and sales.', bullets: ['Website design', 'Custom development', 'Ecommerce', 'WordPress'] },
+  { slug: 'events', title: 'Events & Brand Activation', icon: 'spark', img: s('concert'), desc: 'BTL activations, event marketing, promoters and live acts that put your brand face-to-face with buyers.', bullets: ['BTL activation', 'Event marketing', 'Promoters & artists'] },
+  { slug: 'performance', title: 'Digital & Performance Marketing', icon: 'chart', img: s('analytics'), desc: 'Paid campaigns on Google, Meta and social that are measured on leads and revenue - not likes.', bullets: ['Google Ads', 'Meta Ads', 'Social media', 'Lead generation'] },
+  { slug: 'direct', title: 'Direct Marketing', icon: 'send', img: s('sms'), desc: 'Reach customers one-to-one through WhatsApp, cold calling, SMS, email and targeted flyer distribution.', bullets: ['WhatsApp API', 'Cold calling', 'Meeting scheduling', 'SMS & flyers'] },
+  { slug: 'seo', title: 'SEO & AI Search', icon: 'search', img: s('seo'), desc: 'Rank on Google and get cited by ChatGPT, Gemini and AI Overviews when customers search in Dubai.', bullets: ['Local SEO', 'AEO & GEO', 'ChatGPT SEO', 'Technical SEO'] },
   { slug: 'media', title: 'Media Buying & PR', icon: 'mic', img: s('radio-studio'), desc: 'Negotiated media plans across radio, print and digital, plus PR that earns real coverage.', bullets: ['Media buying', 'Press releases', 'Radio ads'] },
   { slug: 'branding', title: 'Branding & Creative', icon: 'pen', img: s('branding'), desc: 'Memorable brand identities, campaign creative, video production and premium corporate gifts.', bullets: ['Brand identity', 'Video production', 'Corporate gifts'] },
-  { slug: 'direct', title: 'Direct Marketing', icon: 'send', img: s('sms'), desc: 'Reach customers directly through WhatsApp, SMS, email and targeted flyer distribution.', bullets: ['WhatsApp marketing', 'SMS & email', 'Flyer distribution'] },
-  { slug: 'events', title: 'Events & Brand Activation', icon: 'spark', img: s('concert'), desc: 'BTL activations, event marketing and promoters that put your brand face-to-face with buyers.', bullets: ['BTL activation', 'Event marketing', 'Promoters & artists'] },
 ];
 
 export const services: Service[] = [
-  // 1. Web Design & Development
+  // Web Design & Development
   { slug: 'website-design-dubai', title: 'Website Design', cat: 'web', img: s('web-design'), hot: true,
     desc: 'Custom, responsive website design for Dubai businesses - crafted to look premium, load fast and convert visitors into enquiries.',
     features: ['Custom UI/UX design tailored to your brand', 'Mobile-first, responsive layouts', 'Conversion-focused page structure and CTAs', 'Arabic & English bilingual design'] },
@@ -47,7 +50,7 @@ export const services: Service[] = [
     desc: 'Custom WordPress themes and plugins that are fast, secure and easy for your team to manage.',
     features: ['Custom themes - no bloated page builders', 'Plugin development & integrations', 'Speed and security hardening', 'Ongoing maintenance & updates'] },
 
-  // 2. SEO & AI Search
+  // SEO & AI Search
   { slug: 'seo-services-dubai', title: 'SEO Services', cat: 'seo', img: s('seo'), hot: true,
     desc: 'Data-driven SEO that grows your organic traffic and rankings for the keywords your Dubai customers actually search.',
     features: ['Keyword research & competitor analysis', 'On-page optimisation & content', 'Technical SEO & Core Web Vitals', 'Link building & monthly reporting'] },
@@ -64,7 +67,7 @@ export const services: Service[] = [
     desc: 'Get recommended when people ask ChatGPT for the best providers in Dubai - through content, citations and authority.',
     features: ['ChatGPT visibility benchmarking', 'Authoritative third-party mentions', 'Content optimised for LLM retrieval', 'Monthly AI share-of-voice reports'] },
 
-  // 3. Digital & Performance Marketing
+  // Digital & Performance Marketing
   { slug: 'performance-marketing-dubai', title: 'Performance Marketing', cat: 'performance', img: s('analytics'), hot: true,
     desc: 'Full-funnel paid media managed against one goal: more qualified leads and sales at a lower cost.',
     features: ['Cross-channel media strategy', 'Conversion tracking & attribution', 'Creative testing at scale', 'Weekly optimisation & reporting'] },
@@ -84,21 +87,7 @@ export const services: Service[] = [
     desc: 'Native Arabic campaigns, content and SEO that connect with Emirati and GCC audiences.',
     features: ['Arabic copywriting & transcreation', 'Arabic SEO & ads', 'Culturally tuned creative', 'Bilingual social media'] },
 
-  // 4. AI & Automation
-  { slug: 'ai-marketing-agency-dubai', title: 'AI Marketing', cat: 'ai', img: s('ai'), hot: true,
-    desc: 'Use AI to research, create and optimise marketing faster - with humans in control of strategy and quality.',
-    features: ['AI-assisted content production', 'Predictive audience targeting', 'Automated reporting dashboards', 'AI creative testing'] },
-  { slug: 'ai-automation-agency-dubai', title: 'AI Automation', cat: 'ai', img: s('robot'),
-    desc: 'Automate repetitive sales, marketing and operations tasks so your team focuses on high-value work.',
-    features: ['Workflow automation (Make, Zapier, n8n)', 'AI document & email processing', 'CRM and lead routing', 'Custom AI agents'] },
-  { slug: 'ai-chatbot-development-dubai', title: 'AI Chatbot Development', cat: 'ai', img: s('chatbot'), hot: true,
-    desc: 'Custom AI chatbots trained on your business that answer questions, qualify leads and book appointments 24/7.',
-    features: ['Website & app chatbots', 'Trained on your FAQs and documents', 'Arabic & English conversations', 'Human hand-off and CRM sync'] },
-  { slug: 'whatsapp-business-api-dubai', title: 'WhatsApp Business API & Automation', cat: 'ai', img: s('whatsapp'), hot: true,
-    desc: 'Official WhatsApp Business API setup with chatbots, broadcasts and automated follow-ups.',
-    features: ['Official API onboarding & green tick support', 'WhatsApp chatbots & flows', 'Broadcast campaigns', 'Shared team inbox'] },
-
-  // 5. OOH Advertising
+  // OOH Advertising
   { slug: 'ooh-advertising-dubai', title: 'OOH Advertising', cat: 'ooh', img: s('ooh'), hot: true,
     desc: 'End-to-end out-of-home advertising in Dubai - planning, booking, design, printing and installation.',
     features: ['Location & audience planning', 'Media booking at negotiated rates', 'Creative design & printing', 'Campaign photo reports'] },
@@ -133,7 +122,7 @@ export const services: Service[] = [
     desc: 'Digital screens, atrium activations and branding in Dubai’s busiest shopping malls.',
     features: ['Mall digital screens', 'Atrium & kiosk activations', 'Escalator & lift branding', 'Sampling & promotions'] },
 
-  // 6. Media Buying & PR
+  // Media Buying & PR
   { slug: 'media-buying-agency-dubai', title: 'Media Buying', cat: 'media', img: s('strategy'),
     desc: 'Strategic media planning and buying across TV, radio, print, outdoor and digital at negotiated rates.',
     features: ['Integrated media planning', 'Negotiated rates & added value', 'Booking & trafficking', 'Post-campaign analysis'] },
@@ -144,7 +133,7 @@ export const services: Service[] = [
     desc: 'Radio campaigns on leading UAE stations - script, voice-over, production and airtime booking.',
     features: ['Station & slot planning', 'Script writing & voice-over', 'Spot production', 'Sponsorships & live reads'] },
 
-  // 7. Branding & Creative
+  // Branding & Creative
   { slug: 'branding-agency-dubai', title: 'Branding & Creative', cat: 'branding', img: s('branding'),
     desc: 'Brand strategy, logo and identity systems, and campaign creative that make you instantly recognisable.',
     features: ['Brand strategy & naming', 'Logo & visual identity', 'Brand guidelines', 'Campaign & ad creative'] },
@@ -155,7 +144,16 @@ export const services: Service[] = [
     desc: 'Premium branded corporate gifts and giveaways for clients, staff and events in the UAE.',
     features: ['Custom branded merchandise', 'Executive gift sets', 'Eid & year-end hampers', 'Packaging & delivery'] },
 
-  // 8. Direct Marketing
+  // Direct Marketing
+  { slug: 'whatsapp-business-api-dubai', title: 'WhatsApp Business API & Automation', cat: 'direct', img: s('whatsapp'), hot: true,
+    desc: 'Turn WhatsApp into your best sales channel: the official Business API with a verified green tick, instant auto-replies, broadcasts to thousands and one shared inbox for your whole team.',
+    features: ['Official API setup, Meta verification & green tick support', 'Instant auto-replies and menus, 24/7', 'Broadcasts & offers to your full customer list', 'One shared inbox for all your sales staff', 'Catalogue, payment links & order updates', 'Lead capture straight into your CRM'],
+    uses: [
+      { t: 'Never miss a lead again', d: 'Every enquiry from ads, your website or a billboard QR code gets an instant reply with prices, brochures or a booking link - even at 2 AM.' },
+      { t: 'Broadcast without getting banned', d: 'Send offers, launches and reminders to thousands of opted-in customers with approved templates - no personal-number blocks.' },
+      { t: 'Your whole team on one number', d: 'Sales, support and accounts all reply from the same verified business number, with chats assigned and tracked.' },
+      { t: 'Sell inside the chat', d: 'Share your catalogue, take orders, send payment links and delivery updates without the customer leaving WhatsApp.' },
+    ] },
   { slug: 'whatsapp-marketing-dubai', title: 'WhatsApp Marketing', cat: 'direct', img: s('phone-chat'),
     desc: 'Compliant WhatsApp broadcast and conversational campaigns with industry-leading open rates.',
     features: ['Opt-in list building', 'Template message approval', 'Broadcast & drip campaigns', 'Click & reply tracking'] },
@@ -168,18 +166,34 @@ export const services: Service[] = [
   { slug: 'flyer-distribution-dubai', title: 'Flyer Distribution', cat: 'direct', img: s('flyer'),
     desc: 'Targeted flyer and leaflet distribution to homes, offices and high-footfall areas across Dubai.',
     features: ['Flyer design & printing', 'Door-to-door distribution', 'Hand-to-hand at hotspots', 'GPS-tracked teams'] },
+  { slug: 'cold-calling-services-dubai', title: 'Cold Calling', cat: 'direct', img: s('cold-calling'), hot: true,
+    desc: 'Trained English and Arabic callers who reach your target companies by phone, pitch your offer and hand you qualified, interested prospects.',
+    features: ['Targeted B2B & B2C calling lists', 'Scripts written for your offer', 'Bilingual English & Arabic callers', 'Daily call reports & call recordings', 'Qualified leads passed to your team', 'CRM updates after every call'] },
+  { slug: 'appointment-setting-dubai', title: 'Meeting Scheduling', cat: 'direct', img: s('meeting-scheduling'), hot: true,
+    desc: 'We fill your sales calendar: our team contacts decision-makers, qualifies them and books confirmed meetings directly into your diary.',
+    features: ['Decision-maker research & outreach', 'Calls, WhatsApp & email follow-ups', 'Qualification before every booking', 'Meetings booked into your calendar', 'Reminders to cut no-shows', 'Weekly pipeline report'] },
 
-  // 9. Events & Brand Activation
+  // Events & Brand Activation
   { slug: 'btl-activation-dubai', title: 'BTL & Brand Activation', cat: 'events', img: s('event'),
     desc: 'Below-the-line activations, sampling and experiential campaigns that create real-world engagement.',
     features: ['Concept & activation design', 'Sampling & in-store promotions', 'Booth fabrication', 'Staffing & reporting'] },
   { slug: 'event-marketing-dubai', title: 'Event Marketing', cat: 'events', img: s('concert'),
     desc: 'Promote launches, exhibitions and events with integrated digital, outdoor and on-ground marketing.',
     features: ['Event promotion strategy', 'Ticketing & registration funnels', 'On-site branding', 'Social coverage'] },
-  { slug: 'event-promoters-dubai', title: 'Event Promoters & Artists', cat: 'events', img: s('promoter'),
-    desc: 'Professional promoters, hosts, models and artists for events, exhibitions and activations.',
-    features: ['Promoters & brand ambassadors', 'Hosts, MCs & models', 'Performers & artists', 'Uniforms & briefing'] },
+  { slug: 'event-promoters-dubai', title: 'Event Promoters & Artists', cat: 'events', img: s('act-african-drummers'),
+    desc: 'Professional promoters, hosts and show-stopping live acts - from African drummers to LED performers - for events, launches, weddings and activations.',
+    features: ['Promoters & brand ambassadors', 'Hosts, MCs & models', 'African drummers & dancers', 'LED light & water drumming shows', 'Costumes, sound & stage coordination', 'Uniforms & briefing'],
+    acts: [
+      { name: 'African Drummers', desc: 'High-energy djembe drumming that sets the rhythm for arrivals, launches and corporate celebrations.', img: s('act-african-drummers') },
+      { name: 'African Dancers', desc: 'Colourful, authentic dance troupes in traditional costume that bring any crowd to its feet.', img: s('act-african-dancers') },
+      { name: 'LED Light Dancers', desc: 'Dancers in glowing LED costumes for dramatic night shows, walk-arounds and grand entrances.', img: s('act-led-dancers') },
+      { name: 'LED Liquid Drumming Act', desc: 'Drummers on illuminated drums that splash glowing liquid with every beat - an unforgettable finale.', img: s('act-led-liquid-drums') },
+      { name: 'LED Water Drummers', desc: 'Synchronised drumming on water-filled LED drums, creating light-and-water effects in time with the music.', img: s('act-led-water-drums') },
+    ] },
 ];
 
 export const byCat = (cat: string) => services.filter((x) => x.cat === cat);
+/** Popular services shown on the home page and footer - a deliberate mix of offline and digital. */
+export const featured = ['billboard-advertising-dubai', 'website-design-dubai', 'event-promoters-dubai', 'google-ads-dubai', 'led-truck-advertising-dubai', 'whatsapp-business-api-dubai', 'dubai-metro-advertising', 'social-media-marketing-dubai', 'cold-calling-services-dubai']
+  .map((slug) => services.find((x) => x.slug === slug)!);
 export const catOf = (slug: string) => categories.find((c) => c.slug === slug)!;

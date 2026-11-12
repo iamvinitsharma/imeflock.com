@@ -3,12 +3,12 @@ import Icon from './Icon.astro';
 import Btn from './Btn.astro';
 import Bird from './Bird.astro';
 import { site } from '../data/site';
-import { categories, services } from '../data/services';
+import { categories, featured } from '../data/services';
 const year = new Date().getFullYear();
 const stats = [
   ['300+', 'Projects', 'Delivered'], ['98%', 'Client', 'Retention'], ['40+', 'Services', 'Under one roof'], ['24/7', 'Campaign', 'Monitoring'], ['10+', 'Years of', 'Experience'],
 ];
-const popular = services.filter((s) => s.hot).slice(0, 7);
+const popular = featured.slice(0, 8);
 ---
 <div class="stats-strip">
   <div class="marquee-track">
@@ -35,7 +35,7 @@ const popular = services.filter((s) => s.hot).slice(0, 7);
     <div class="footer-grid">
       <div class="about-f">
         <img src="/img/logo-light.webp" alt="Limeflock" width="190" height="66" loading="lazy" />
-        <p>Dubai's digital growth partner - websites, performance marketing, AI and outdoor advertising under one roof.</p>
+        <p>Dubai's business growth partner - outdoor advertising, events, websites and digital marketing under one roof.</p>
         <div class="f-social">
           {site.social.map((s) => <a class="magnetic" href={s.href} aria-label={s.name} target="_blank" rel="noopener"><Icon name={s.icon} /></a>)}
         </div>
@@ -56,6 +56,7 @@ const popular = services.filter((s) => s.hot).slice(0, 7);
           <li><Icon name="pin" /><span>{site.address.join(', ')}<br />{site.poBox}</span></li>
           <li><Icon name="clock" /><span>{site.hours.join(' · ')}</span></li>
         </ul>
+        <a class="f-profile" href="/limeflock-company-profile.pdf" download><Icon name="arrow" /> Download company profile</a>
         <div class="avail">Available for new projects</div>
       </div>
     </div>
@@ -70,7 +71,7 @@ const popular = services.filter((s) => s.hot).slice(0, 7);
     <div class="copy">
       <span>© {year} Limeflock. All rights reserved.</span>
       <nav><a href="/about/">About</a><a href="/services/">Services</a><a href="/portfolio/">Portfolio</a><a href="/contact/">Contact</a></nav>
-      <span>Digital Growth Partner · Dubai, UAE</span>
+      <span>Business Growth Partner · Dubai, UAE</span>
     </div>
   </div>
 </footer>

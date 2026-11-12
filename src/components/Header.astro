@@ -2,11 +2,11 @@
 import Icon from './Icon.astro';
 import Btn from './Btn.astro';
 import { nav, site } from '../data/site';
-import { categories, byCat } from '../data/services';
+import { categories, byCat, services } from '../data/services';
 const path = Astro.url.pathname;
 const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWith(href));
 // mega menu: stack short groups so the panel stays short (5 balanced columns)
-const megaCols = [['web', 'seo'], ['performance', 'ai'], ['ooh'], ['media', 'branding'], ['direct', 'events']]
+const megaCols = [['ooh'], ['events', 'media'], ['web', 'seo'], ['performance', 'branding'], ['direct']]
   .map((col) => col.map((slug) => categories.find((c) => c.slug === slug)!));
 ---
 <header class="header" id="header">
@@ -36,7 +36,7 @@ const megaCols = [['web', 'seo'], ['performance', 'ai'], ['ooh'], ['media', 'bra
                   </div>
                 ))}
                 <div class="mega-foot">
-                  <span>43 services across 9 specialist teams - digital, AI, outdoor and on-ground.</span>
+                  <span>{services.length} services across {categories.length} specialist teams - outdoor, on-ground and digital.</span>
                   <a href="/services/" class="mega-all">View all services <Icon name="arrow" /></a>
                 </div>
               </div>
@@ -80,7 +80,7 @@ const megaCols = [['web', 'seo'], ['performance', 'ai'], ['ooh'], ['media', 'bra
                   </div>
                 </details>
               ))}
-              <a href="/services/" class="m-all">View all 43 services <Icon name="arrow" /></a>
+              <a href="/services/" class="m-all">View all {services.length} services <Icon name="arrow" /></a>
             </div>
           </details>
         ) : (
